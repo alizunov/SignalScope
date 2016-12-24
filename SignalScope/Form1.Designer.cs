@@ -28,12 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.OpenSignal_button = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // OpenSignal_button
+            // 
+            this.OpenSignal_button.Location = new System.Drawing.Point(12, 12);
+            this.OpenSignal_button.Name = "OpenSignal_button";
+            this.OpenSignal_button.Size = new System.Drawing.Size(75, 23);
+            this.OpenSignal_button.TabIndex = 0;
+            this.OpenSignal_button.Text = "Open signal";
+            this.OpenSignal_button.UseVisualStyleBackColor = true;
+            this.OpenSignal_button.Click += new System.EventHandler(this.OpenSignal_button_Click);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(834, 678);
+            this.Controls.Add(this.OpenSignal_button);
+            this.Name = "Form1";
+            this.Text = "SignalScope";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button OpenSignal_button;
     }
 }
 
