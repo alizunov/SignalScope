@@ -13,7 +13,7 @@ namespace SignalScope
     public partial class Form1 : Form
     {
         // Data members
-        Waveform[] ScopeChannels;
+        Waveform[] waves;
 
 
         // *******************************
@@ -50,6 +50,10 @@ namespace SignalScope
                 {
                     if ((myStream = openFileDialog1.OpenFile()) != null)
                     {
+                        System.IO.StreamReader stReader = new System.IO.StreamReader(myStream);
+
+                        string str1 = stReader.ReadLine();
+                        // Discover the header ..
                         // We can handle the following text records from scopes:
                         // 1. Tektronix's CSV:
                         // s, Volts1, Volts2, Volts3, Volts4
@@ -63,38 +67,45 @@ namespace SignalScope
                         //Time, Ampl1, Ampl2, Ampl3, Ampl4
                         //-5.0003623e-006,-0.03, 0, 0, 0
                         // ...
-                        List<string> WaveText = new List<string>();
-                        System.IO.StreamReader stReader = new System.IO.StreamReader(myStream);
-                        // Text file or not?
-                        string str1 = "";
-                        while ( (str1 = stReader.ReadLine()) != null )
-                        {
-                            char[] delimiterChars = { ' ', ',', ':', '\t' };
-                            string[] words = str1.Split(delimiterChars);
-                            if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
-                            {
-                                stReader.ReadLine();
-                                stReader.ReadLine();
-                                stReader.ReadLine();
-                                str1 = stReader.ReadLine(); // Time, Ampl
-                                words = str1.Split(delimiterChars);
-                            }
-                            else if (words[0] == "SomethingElse")
-                            {
-                                // Skip several lines.
-                                //str1 = stReader.ReadLine(); // Time, Ampl
-                                //words = str1.Split(delimiterChars);
-                            }
-                            else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
-                            {
-                                int Nsignals = words.Length - 1;
-                                // Continue here ..
-                            }
-                            else
-                            {
-                                MessageBox.Show("Not recognized pattern: binary file? String:  " + str1);
-                            }
+                        char[] delimiterChars = { ' ', ',', ':', '\t' };
+                        string[] words = str1.Split(delimiterChars);
+                        int Nwavefoms = 0;   // Number of waveforms
 
+                        if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
+                        {
+                            stReader.ReadLine();
+                            stReader.ReadLine();
+                            stReader.ReadLine();
+                            str1 = stReader.ReadLine(); // Time, Ampl
+                            words = str1.Split(delimiterChars);
+                            Nwavefoms = words.Length - 1;
+                        }
+                        else if (words[0] == "SomethingElse")
+                        {
+                            // Skip several lines.
+                            //str1 = stReader.ReadLine(); // Time, Ampl
+                            //words = str1.Split(delimiterChars);
+                        }
+                        else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
+                        {
+                            Nwavefoms = words.Length - 1;
+
+                        }
+                        else // Binary?
+                        {
+                            MessageBox.Show("Not recognized pattern: binary file? String:  " + str1);
+                        }
+
+                        if (Nwavefoms > 0)
+                        {
+                            List<double>[] cols = new List<double>[Nwavefoms + 1];  // +1 for time column
+                            while ( (str1 = stReader.ReadLine()) != null )
+                            {
+                                words = str1.Split(delimiterChars);
+                                for (int icol = 0; icol < words.Length; icol++)
+                                    cols[icol].Add(Convert.ToDouble(words[icol]));
+                            }
+                            // Cont here ..
                         }
                     }
                 }
@@ -103,6 +114,11 @@ namespace SignalScope
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
+        }
+
+        private void FileRead_progressBar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

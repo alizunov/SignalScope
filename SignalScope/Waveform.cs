@@ -67,7 +67,7 @@ namespace SignalScope
         }
 
         /// <summary>
-        /// Ctor.
+        /// Ctor with parameters.
         /// </summary>
         public Waveform(string name, List<double> voltage, double tstart, double tend)
         {
@@ -85,6 +85,31 @@ namespace SignalScope
                 
             }
         }
+        
+        /// <summary>
+        /// Ctor without parameters.
+        /// </summary>
+        public Waveform()
+        {
+            Samples = new List<double>();
+        }
+
+        /// <summary>
+        /// Fills the data list.
+        /// </summary>
+        public void Fill(List<double> data)
+        {
+            Samples = data;
+        }
+
+        /// <summary>
+        /// Fills the data list.
+        /// </summary>
+        public void Fill(double[] data)
+        {
+            Samples = data.ToList();
+        }
+
 
 
     // Class
