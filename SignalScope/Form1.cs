@@ -14,6 +14,8 @@ namespace SignalScope
     {
         // Data members
         Waveform[] ScopeChannels;
+
+
         // *******************************
         // *** Ctor of the main window ***
         public Form1()
@@ -22,11 +24,16 @@ namespace SignalScope
         }
         // *** Ctor of the main window ***
         // *******************************
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// Read input file: lets assume this is a text file and read accordingly. Fallback to binary if wrong.
+        /// </summary>
         private void OpenSignal_button_Click(object sender, EventArgs e)
         {
             System.IO.Stream myStream = null;
@@ -43,7 +50,6 @@ namespace SignalScope
                 {
                     if ((myStream = openFileDialog1.OpenFile()) != null)
                     {
-                        // Insert code to read the stream here.
                         // We can handle the following text records from scopes:
                         // 1. Tektronix's CSV:
                         // s, Volts1, Volts2, Volts3, Volts4
@@ -59,12 +65,13 @@ namespace SignalScope
                         // ...
                         List<string> WaveText = new List<string>();
                         System.IO.StreamReader stReader = new System.IO.StreamReader(myStream);
+                        // Text file or not?
                         string str1 = "";
                         while ( (str1 = stReader.ReadLine()) != null )
                         {
                             char[] delimiterChars = { ' ', ',', ':', '\t' };
                             string[] words = str1.Split(delimiterChars);
-                            if (words[0] == "LECROYMAUI")
+                            if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
                             {
                                 stReader.ReadLine();
                                 stReader.ReadLine();
@@ -78,10 +85,14 @@ namespace SignalScope
                                 //str1 = stReader.ReadLine(); // Time, Ampl
                                 //words = str1.Split(delimiterChars);
                             }
-                            else
+                            else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
                             {
                                 int Nsignals = words.Length - 1;
                                 // Continue here ..
+                            }
+                            else
+                            {
+                                MessageBox.Show("Not recognized pattern: binary file? String:  " + str1);
                             }
 
                         }
