@@ -13,7 +13,7 @@ namespace SignalScope
     public partial class Form1 : Form
     {
         // Data members
-        Waveform[] waves;
+        List<Waveform> waves;
 
 
         // *******************************
@@ -98,14 +98,22 @@ namespace SignalScope
 
                         if (Nwavefoms > 0)
                         {
-                            List<double>[] cols = new List<double>[Nwavefoms + 1];  // +1 for time column
+                            List< List<double> > cols = new List< List<double> >(Nwavefoms + 1);  // +1 for time column
                             while ( (str1 = stReader.ReadLine()) != null )
                             {
                                 words = str1.Split(delimiterChars);
                                 for (int icol = 0; icol < words.Length; icol++)
-                                    cols[icol].Add(Convert.ToDouble(words[icol]));
+                                    cols.ElementAt(icol).Add(Convert.ToDouble(words[icol]));
                             }
-                            // Cont here ..
+                            double tstart = cols.ElementAt(0).ElementAt(0);
+                            double tend = cols.ElementAt(0).Last();
+                            for (int iwave=0; iwave<Nwavefoms; iwave++)
+                            {
+                                // Creating Waveform objects
+                                waves[iwave] = new Waveform("Waveform " + iwave.ToString(), cols.ElementAt(iwave + 1), tstart, tend);
+                            }
+                            // cols can be disposed
+                            cols.Clear();
                         }
                     }
                 }
