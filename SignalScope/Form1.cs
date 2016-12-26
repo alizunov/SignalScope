@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -67,8 +68,8 @@ namespace SignalScope
                         //Time, Ampl1, Ampl2, Ampl3, Ampl4
                         //-5.0003623e-006,-0.03, 0, 0, 0
                         // ...
-                        char[] delimiterChars = { ' ', ',', ':', '\t' };
-                        string[] words = str1.Split(delimiterChars);
+                        string pattern = @"[,\s*]";
+                        string[] words = Regex.Split(str1, pattern);
                         int Nwavefoms = 0;   // Number of waveforms
 
                         if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
@@ -77,8 +78,9 @@ namespace SignalScope
                             stReader.ReadLine();
                             stReader.ReadLine();
                             str1 = stReader.ReadLine(); // Time, Ampl
-                            words = str1.Split(delimiterChars);
+                            words = Regex.Split(str1, pattern);
                             Nwavefoms = words.Length - 1;
+                            Console.WriteLine("Presumably, a Lecroy TRC file header with {0} columns: " + str1, words.Length);
                         }
                         else if (words[0] == "SomethingElse")
                         {
@@ -89,7 +91,7 @@ namespace SignalScope
                         else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
                         {
                             Nwavefoms = words.Length - 1;
-
+                            Console.WriteLine("Presumably, a Tektronix CSV file header with {0} columns: " + str1, words.Length);
                         }
                         else // Binary?
                         {
@@ -98,12 +100,18 @@ namespace SignalScope
 
                         if (Nwavefoms > 0)
                         {
-                            List< List<double> > cols = new List< List<double> >(Nwavefoms + 1);  // +1 for time column
+                            //MessageBox.Show("Columns in the input file: " + words.Length.ToString() + ", header string: " + str1);
+                            List< List<double> > cols = new List< List<double> >();
+                            for (int icol = 0; icol < Nwavefoms + 1; icol++)    // +1 for time column
+                                cols.Add(new List<double>());
                             while ( (str1 = stReader.ReadLine()) != null )
                             {
-                                words = str1.Split(delimiterChars);
-                                for (int icol = 0; icol < words.Length; icol++)
-                                    cols.ElementAt(icol).Add(Convert.ToDouble(words[icol]));
+                                words = Regex.Split(str1, pattern);
+                                for (int icol = 0; icol < Nwavefoms + 1; icol++)
+                                {
+                                    Console.WriteLine("Readout: " + str1);
+                                    cols[icol].Add(Convert.ToDouble(words[icol]));
+                                }
                             }
                             double tstart = cols.ElementAt(0).ElementAt(0);
                             double tend = cols.ElementAt(0).Last();
