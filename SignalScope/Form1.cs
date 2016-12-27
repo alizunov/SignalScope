@@ -210,9 +210,19 @@ namespace SignalScope
 
         }
 
+        /// <summary>
+        /// Update time axis labels and title depending on units chosen
+        /// </summary>
         private void TimeUnits_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Update time axis labels and title
+            double TimeModifier = Math.Pow(10, -3 * TimeUnits_comboBox.SelectedIndex);
+            // Change Time axis text
+            gp.XAxis.Title.Text = "Time, " + TimeUnits_comboBox.SelectedItem;
+            // Rescale time axes for all waveforms
+            foreach (CurveItem crv in gp.CurveList)
+            {
+                // cont here
+            }
         }
     }
 }
