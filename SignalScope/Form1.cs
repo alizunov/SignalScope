@@ -210,6 +210,7 @@ namespace SignalScope
 
         }
 
+
         /// <summary>
         /// Update time axis labels and title depending on units chosen
         /// </summary>
@@ -222,6 +223,7 @@ namespace SignalScope
             foreach (CurveItem crv in gp.CurveList)
             {
                 // cont here
+                CurveItem curve = new 
             }
         }
     }
