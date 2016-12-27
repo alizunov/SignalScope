@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,12 +10,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using ZedGraph;
+
 namespace SignalScope
 {
     public partial class Form1 : Form
     {
         // Data members
         List<Waveform> waves;
+        GraphPane gp;
 
 
         // *******************************
@@ -22,6 +26,19 @@ namespace SignalScope
         public Form1()
         {
             InitializeComponent();
+
+            zedGraphControl1.Visible = false;
+            WaveformPlots_groupBox.Enabled = false;
+
+            // Create list of waveforms
+            waves = new List<Waveform>();
+
+            // Create Graph Pane
+            gp = zedGraphControl1.GraphPane;
+
+            // Definition of time units combobox items
+            TimeUnits_comboBox.Items.AddRange(new object[] {"s", "ms", "us", "ns"});
+
         }
         // *** Ctor of the main window ***
         // *******************************
@@ -40,7 +57,7 @@ namespace SignalScope
             System.IO.Stream myStream = null;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            openFileDialog1.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            //openFileDialog1.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
             openFileDialog1.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
@@ -68,7 +85,8 @@ namespace SignalScope
                         //Time, Ampl1, Ampl2, Ampl3, Ampl4
                         //-5.0003623e-006,-0.03, 0, 0, 0
                         // ...
-                        string pattern = @"[,\s*]";
+                        bool isTextFile = true;
+                        string pattern = @"\s*\t*,\s*\t*";
                         string[] words = Regex.Split(str1, pattern);
                         int Nwavefoms = 0;   // Number of waveforms
 
@@ -95,7 +113,9 @@ namespace SignalScope
                         }
                         else // Binary?
                         {
-                            MessageBox.Show("Not recognized pattern: binary file? String:  " + str1);
+                            MessageBox.Show("No text pattern matches, assumed binary file. String:  " + str1);
+                            // Add code to parse binary header !
+                            isTextFile = false;
                         }
 
                         if (Nwavefoms > 0)
@@ -104,24 +124,59 @@ namespace SignalScope
                             List< List<double> > cols = new List< List<double> >();
                             for (int icol = 0; icol < Nwavefoms + 1; icol++)    // +1 for time column
                                 cols.Add(new List<double>());
-                            while ( (str1 = stReader.ReadLine()) != null )
+
+                            // Get the file size in bytes
+                            var fi = new FileInfo(openFileDialog1.FileName);
+                            var FileSize = fi.Length;
+                            Console.WriteLine("File size: {0} bytes", FileSize);
+
+                            if (isTextFile)
                             {
-                                words = Regex.Split(str1, pattern);
-                                for (int icol = 0; icol < Nwavefoms + 1; icol++)
+                                int StrSize = 0;
+                                int StrNumPercent = 0;
+                                int StrCount = 0;
+                                // Init the progress bar
+                                FileRead_progressBar.Minimum = 0;
+                                FileRead_progressBar.Maximum = 100;
+                                FileRead_progressBar.Step = 1;
+                                // *** Readout TEXT loop ***
+                                while ((str1 = stReader.ReadLine()) != null)
                                 {
-                                    Console.WriteLine("Readout: " + str1);
-                                    cols[icol].Add(Convert.ToDouble(words[icol]));
+                                    if (StrSize == 0)
+                                    {
+                                        StrSize = str1.Length * sizeof(Char);
+                                        StrNumPercent = (int)FileSize / StrSize / 100;
+                                    }
+                                    if (++StrCount >= StrNumPercent)
+                                    {
+                                        FileRead_progressBar.PerformStep();
+                                        StrCount = 0;
+                                    }
+                                    words = Regex.Split(str1, pattern);
+                                    for (int icol = 0; icol < Nwavefoms + 1; icol++)
+                                    {
+                                        //Console.WriteLine("Word count: {0}, string: " + str1, words.Length);
+                                        cols[icol].Add(Convert.ToDouble(words[icol]));
+                                    }
                                 }
+                                // *** Readout TEXT loop ***
                             }
+                            else
+                            {
+                                MessageBox.Show("Readout of a binary file not implemented yet.");
+                            }
+
                             double tstart = cols.ElementAt(0).ElementAt(0);
                             double tend = cols.ElementAt(0).Last();
-                            for (int iwave=0; iwave<Nwavefoms; iwave++)
+
+                            // Create waveforms
+                            for (int iwave = 0; iwave < Nwavefoms; iwave++)
                             {
-                                // Creating Waveform objects
-                                waves[iwave] = new Waveform("Waveform " + iwave.ToString(), cols.ElementAt(iwave + 1), tstart, tend);
+                                waves.Add(new Waveform("Waveform-" + iwave.ToString(), cols.ElementAt(1), tstart, tend));
                             }
                             // cols can be disposed
                             cols.Clear();
+                            Console.WriteLine("{0} waveforms created, {1} samples each.", Nwavefoms, waves.ElementAt(0).Npoints);
                         }
                     }
                 }
@@ -135,6 +190,29 @@ namespace SignalScope
         private void FileRead_progressBar_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void zedGraphControl1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void WaveformPlots_groupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Sets ZedGraph pane (axis, title, etc).
+        /// </summary>
+        private void InitGraphPane()
+        {
+
+        }
+
+        private void TimeUnits_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Update time axis labels and title
         }
     }
 }
