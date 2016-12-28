@@ -56,7 +56,7 @@ namespace SignalScope
 
             // Definition of time units combobox items
             TimeUnits_comboBox.Items.AddRange(new object[] {"s", "ms", "us", "ns"});
-            TimeUnits_comboBox.SelectedIndex = 2;
+            TimeUnits_comboBox.SelectedIndex = 0;
 
             // Init pane for graphics (title, fonts, axis, etc.)
             InitGraphPane();
@@ -148,8 +148,8 @@ namespace SignalScope
                                 cols.Add(new List<double>());
 
                             // Get the file size in bytes
-                            var fi = new FileInfo(openFileDialog1.FileName);
-                            var FileSize = fi.Length;
+                            FileInfo fi = new FileInfo(openFileDialog1.FileName);
+                            long FileSize = fi.Length;
                             Console.WriteLine("File size: {0} bytes", FileSize);
 
                             if (isTextFile)
@@ -175,9 +175,9 @@ namespace SignalScope
                                         StrCount = 0;
                                     }
                                     words = Regex.Split(str1, pattern);
-                                    for (int icol = 0; icol < Nwavefoms + 1; icol++)
+                                   for (int icol = 0; icol < Nwavefoms + 1; icol++)
                                     {
-                                        //Console.WriteLine("Word count: {0}, string: " + str1, words.Length);
+                                        //Console.WriteLine("Word count: {0}, words: " + words[0] + " " + words[1], words.Length);
                                         cols[icol].Add(Convert.ToDouble(words[icol]));
                                     }
                                 }
@@ -199,7 +199,7 @@ namespace SignalScope
                             }
                             // cols can be disposed
                             cols.Clear();
-                            Console.WriteLine("{0} waveforms created, {1} samples each.", Nwavefoms, waves.ElementAt(0).Npoints);
+                            Console.WriteLine("{0} waveforms created, {1} samples each.", Nwavefoms, waves.Last().Npoints);
                             // Make the ZedGraph visible and WFM groupbox active
                             if (!zedGraphControl1.Visible)
                                 zedGraphControl1.Visible = true;
@@ -324,7 +324,7 @@ namespace SignalScope
             // Rescale time axes for all waveforms
             foreach (CurveItem crv in gp.CurveList)
             {
-                // cont here
+                ModCurve(crv, "", 1 / TimeModifier, 1, crv.Color, 0);
             }
         }
     }

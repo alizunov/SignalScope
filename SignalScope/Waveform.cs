@@ -67,7 +67,9 @@ namespace SignalScope
         }
 
         /// <summary>
-        /// Ctor with parameters.
+        /// Ctor with parameters:
+        /// voltage - list of samples
+        /// tstart, tend - times in seconds
         /// </summary>
         public Waveform(string name, List<double> voltage, double tstart, double tend)
         {
