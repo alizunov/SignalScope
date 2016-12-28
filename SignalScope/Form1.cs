@@ -20,6 +20,24 @@ namespace SignalScope
         List<Waveform> waves;
         GraphPane gp;
 
+        Color[] WFMcolor = new Color[] {
+            Color.Aquamarine,
+            Color.Gold,
+            Color.Aqua,
+            Color.Blue,
+            Color.BlueViolet,
+            Color.Coral,
+            Color.Crimson,
+            Color.Cyan,
+            Color.DarkBlue,
+            Color.DarkGreen,
+            Color.Orange,
+            Color.Green,
+            Color.Red };
+
+        // Properties
+        public double TimeModifier
+        { get; set; }
 
         // *******************************
         // *** Ctor of the main window ***
@@ -38,6 +56,10 @@ namespace SignalScope
 
             // Definition of time units combobox items
             TimeUnits_comboBox.Items.AddRange(new object[] {"s", "ms", "us", "ns"});
+            TimeUnits_comboBox.SelectedIndex = 2;
+
+            // Init pane for graphics (title, fonts, axis, etc.)
+            InitGraphPane();
 
         }
         // *** Ctor of the main window ***
@@ -169,14 +191,20 @@ namespace SignalScope
                             double tstart = cols.ElementAt(0).ElementAt(0);
                             double tend = cols.ElementAt(0).Last();
 
-                            // Create waveforms
+                            // Create waveforms and curves
                             for (int iwave = 0; iwave < Nwavefoms; iwave++)
                             {
                                 waves.Add(new Waveform("Waveform-" + iwave.ToString(), cols.ElementAt(1), tstart, tend));
+                                AddCurveFromWFM(waves.Last());
                             }
                             // cols can be disposed
                             cols.Clear();
                             Console.WriteLine("{0} waveforms created, {1} samples each.", Nwavefoms, waves.ElementAt(0).Npoints);
+                            // Make the ZedGraph visible and WFM groupbox active
+                            if (!zedGraphControl1.Visible)
+                                zedGraphControl1.Visible = true;
+                            if (!WaveformPlots_groupBox.Enabled)
+                                WaveformPlots_groupBox.Enabled = true;
                         }
                     }
                 }
@@ -208,6 +236,80 @@ namespace SignalScope
         private void InitGraphPane()
         {
 
+            // X axis font
+            gp.XAxis.Title.FontSpec.IsUnderline = false;
+            gp.XAxis.Title.FontSpec.IsBold = false;
+
+            // Y axis text and font
+            gp.YAxis.Title.Text = "Signal, V";
+
+            // Pane title
+            gp.Title.Text = "";
+
+            // Clear curve list
+            gp.CurveList.Clear();
+        }
+
+        /// <summary>
+        /// Add a new curve from the waveform
+        /// </summary>
+        private void AddCurveFromWFM(Waveform wave)
+        {
+            try
+            {
+                PointPairList ppl = new PointPairList();
+                for (int ip = 0; ip < wave.Npoints; ip++)
+                {
+                    double x = wave.t(ip) / TimeModifier;
+                    ppl.Add(x, wave.Samples.ElementAt(ip));
+                }
+                int colindex = (int)gp.CurveList.Count % WFMcolor.Length;
+                LineItem crv = gp.AddCurve(wave.WaveFormName, ppl, WFMcolor[colindex], SymbolType.None);
+                crv.Line.Width = 2;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error creating new curve from WFM {0}. Original message: " + ex.Message, wave.WaveFormName);
+            }
+
+            // Update
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+        }
+
+        /// <summary>
+        /// Modify (scale) a curve
+        /// </summary>
+        private void ModCurve(CurveItem curve, string NewName, double Xscale, double Yscale, Color NewColor, double NewWidth)
+        {
+            try
+            {
+                // Change label (legend entity) if NewName is not empty
+                curve.Label.Text = (NewName == "") ? curve.Label.Text : NewName;
+                // Change point pair list
+                PointPairList ppl = new PointPairList();
+                for (int ip = 0; ip < curve.Points.Count; ip++)
+                {
+                    ppl.Add(curve.Points[ip].X * Xscale, curve.Points[ip].Y * Yscale);
+                }
+                // Change color and width if not zero
+                curve.Color = (NewColor.IsSystemColor) ? NewColor : curve.Color;
+                if (curve.IsLine)
+                {
+                    LineItem li = (LineItem)curve;
+                    li.Line.Width = (NewWidth > 0) ? (float)NewWidth : li.Line.Width;
+                }
+                else
+                    Console.WriteLine("Error modifying curve: {0} is not a LineItem object", curve.Label.Text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error modifying curve {0}. Original message: " + ex.Message, curve.Label.Text);
+            }
+
+            // Update
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
         }
 
 
@@ -216,14 +318,13 @@ namespace SignalScope
         /// </summary>
         private void TimeUnits_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            double TimeModifier = Math.Pow(10, -3 * TimeUnits_comboBox.SelectedIndex);
+            TimeModifier = Math.Pow(10, -3 * TimeUnits_comboBox.SelectedIndex);
             // Change Time axis text
             gp.XAxis.Title.Text = "Time, " + TimeUnits_comboBox.SelectedItem;
             // Rescale time axes for all waveforms
             foreach (CurveItem crv in gp.CurveList)
             {
                 // cont here
-                CurveItem curve = new 
             }
         }
     }
