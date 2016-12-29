@@ -450,5 +450,20 @@ namespace SignalScope
         {
 
         }
+
+        private void Meas_control_groupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Meas_LowGate_t0_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
