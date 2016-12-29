@@ -35,6 +35,11 @@ namespace SignalScope
             Color.Green,
             Color.Red };
 
+        // List of Y-min (actual) values of all existing curves. Updates upon adding a new curve or modification of an existing one.
+        List<double> YminCurves = new List<double>();
+        // List of Y-max (actual) values of all existing curves. Updates upon adding a new curve or modification of an existing one.
+        List<double> YmaxCurves = new List<double>();
+
         // Properties
         public double TimeModifier
         { get; set; }
@@ -194,7 +199,7 @@ namespace SignalScope
                             // Create waveforms and curves
                             for (int iwave = 0; iwave < Nwavefoms; iwave++)
                             {
-                                waves.Add(new Waveform("Waveform-" + iwave.ToString(), cols.ElementAt(1), tstart, tend));
+                                waves.Add(new Waveform("Wave-" + waves.Count, cols.ElementAt(1), tstart, tend));
                                 AddCurveFromWFM(waves.Last());
                             }
                             // cols can be disposed
@@ -235,20 +240,80 @@ namespace SignalScope
         /// </summary>
         private void InitGraphPane()
         {
+            // Font sizes
+            int labelsXfontSize = 10;
+            int labelsYfontSize = 10;
 
-            // X axis font
+            int titleXFontSize = 12;
+            int titleYFontSize = 12;
+
+            int legendFontSize = 6;
+
+            // X axis title and labels fonts
             gp.XAxis.Title.FontSpec.IsUnderline = false;
             gp.XAxis.Title.FontSpec.IsBold = false;
+            gp.XAxis.Title.FontSpec.Size = titleXFontSize;
+            gp.XAxis.Scale.FontSpec.Size = labelsXfontSize;
 
-            // Y axis text and font
+            // Y axis title and labels fonts
             gp.YAxis.Title.Text = "Signal, V";
+            gp.YAxis.Title.FontSpec.IsUnderline = false;
+            gp.YAxis.Title.FontSpec.IsBold = false;
+            gp.YAxis.Title.FontSpec.Size = titleYFontSize;
+            gp.YAxis.Scale.FontSpec.Size = labelsYfontSize;
 
             // Pane title
             gp.Title.Text = "";
 
+            // Curve legend
+            gp.Legend.FontSpec.Size = legendFontSize;
+
             // Clear curve list
             gp.CurveList.Clear();
         }
+
+        /// <summary>
+        /// Calculates X-min for all curves in the list
+        /// </summary>
+        double XminCurveList(CurveList crvlist)
+        {
+            double xmin = Double.MaxValue;
+            try
+            {
+                foreach (CurveItem crv in crvlist)
+                {
+                    xmin = (crv.Points[0].X < xmin) ? crv.Points[0].X : xmin;
+                }
+                return xmin;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error calculating X-min for curves. Original message: " + ex.Message);
+                return Double.MinValue;
+            }
+        }
+
+        /// <summary>
+        /// Calculates X-max for all curves in the list
+        /// </summary>
+        double XmaxCurveList(CurveList crvlist)
+        {
+            double xmax = Double.MinValue;
+            try
+            {
+                foreach (CurveItem crv in crvlist)
+                {
+                    xmax = (crv.Points[crv.Points.Count - 1].X > xmax) ? crv.Points[crv.Points.Count - 1].X : xmax;
+                }
+                return xmax;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error calculating X-max for curves. Original message: " + ex.Message);
+                return Double.MaxValue;
+            }
+        }
+
 
         /// <summary>
         /// Add a new curve from the waveform
@@ -260,21 +325,52 @@ namespace SignalScope
                 PointPairList ppl = new PointPairList();
                 for (int ip = 0; ip < wave.Npoints; ip++)
                 {
-                    double x = wave.t(ip) / TimeModifier;
+                    double x = wave.t(ip) * TimeModifier;
                     ppl.Add(x, wave.Samples.ElementAt(ip));
                 }
                 int colindex = (int)gp.CurveList.Count % WFMcolor.Length;
                 LineItem crv = gp.AddCurve(wave.WaveFormName, ppl, WFMcolor[colindex], SymbolType.None);
+                // Add items to the lists of Y-min and Y-max
+                double ymin = Double.MaxValue;
+                double ymax = Double.MinValue;
+                foreach (PointPair pp in ppl)
+                {
+                    ymin = (pp.Y < ymin) ? pp.Y : ymin;
+                    ymax = (pp.Y > ymax) ? pp.Y : ymax;
+                }
+                YminCurves.Add(ymin);
+                YmaxCurves.Add(ymax);
+
                 crv.Line.Width = 2;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error creating new curve from WFM {0}. Original message: " + ex.Message, wave.WaveFormName);
+                return;
             }
 
-            // Update
+            // Get new x-min and x-max, update X-axis scale limits
+            double xmin = XminCurveList(gp.CurveList);
+            double xmax = XmaxCurveList(gp.CurveList);
+            gp.XAxis.Scale.Min = xmin;
+            gp.XAxis.Scale.Max = xmax;
+
+            // Recalculate y-min and y-max, update Y-axis scale limits
+            double c1 = 1.2;
+            double c2 = 0.9;
+            double Ymin = YminCurves.Min();
+            double Ymax = YmaxCurves.Max();
+            Ymin *= (Ymin >= 0) ? c2 : c1;
+            Ymax *= (Ymax >= 0) ? c1 : c2;
+            gp.YAxis.Scale.Min = Ymin;
+            gp.YAxis.Scale.Max = Ymax;
+
+            // Update axes and graph pane
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
+
+            // Update actrive curve combobox
+            ActiveCurve_comboBox.Items.Add(gp.CurveList.Last().Label.Text);
         }
 
         /// <summary>
@@ -292,6 +388,8 @@ namespace SignalScope
                 {
                     ppl.Add(curve.Points[ip].X * Xscale, curve.Points[ip].Y * Yscale);
                 }
+                curve.Points = ppl;
+
                 // Change color and width if not zero
                 curve.Color = (NewColor.IsSystemColor) ? NewColor : curve.Color;
                 if (curve.IsLine)
@@ -307,7 +405,23 @@ namespace SignalScope
                 Console.WriteLine("Error modifying curve {0}. Original message: " + ex.Message, curve.Label.Text);
             }
 
-            // Update
+            // Get new x-min and x-max, update X-axis scale limits
+            double xmin = XminCurveList(gp.CurveList);
+            double xmax = XmaxCurveList(gp.CurveList);
+            gp.XAxis.Scale.Min = xmin;
+            gp.XAxis.Scale.Max = xmax;
+
+            // Recalculate y-min and y-max, update Y-axis scale limits
+            double c1 = 1.2;
+            double c2 = 0.9;
+            double Ymin = YminCurves.Min();
+            double Ymax = YmaxCurves.Max();
+            Ymin *= (Ymin >= 0) ? c2 : c1;
+            Ymax *= (Ymax >= 0) ? c1 : c2;
+            gp.YAxis.Scale.Min = Ymin;
+            gp.YAxis.Scale.Max = Ymax;
+
+            // Update axes and graph pane
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
         }
@@ -318,14 +432,23 @@ namespace SignalScope
         /// </summary>
         private void TimeUnits_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            TimeModifier = Math.Pow(10, -3 * TimeUnits_comboBox.SelectedIndex);
+            // Calculate the time scaling coeff from the previous time modifier and a new one
+            double TimeModifierPrev = TimeModifier;
+            TimeModifier = Math.Pow(10, 3 * TimeUnits_comboBox.SelectedIndex);
+            double TimeScalingCoeff = TimeModifier / TimeModifierPrev;
             // Change Time axis text
             gp.XAxis.Title.Text = "Time, " + TimeUnits_comboBox.SelectedItem;
             // Rescale time axes for all waveforms
             foreach (CurveItem crv in gp.CurveList)
             {
-                ModCurve(crv, "", 1 / TimeModifier, 1, crv.Color, 0);
+                ModCurve(crv, "", TimeScalingCoeff, 1, crv.Color, 0);
+                //Console.WriteLine("ModCurve: curve {0}, time mod = {1}, prev = {2}, time scale = {3}", crv.Label.Text, TimeModifier, TimeModifierPrev, TimeScalingCoeff);
             }
+        }
+
+        private void ActiveCurve_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

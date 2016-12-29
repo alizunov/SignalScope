@@ -34,6 +34,7 @@
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.WaveformPlots_groupBox = new System.Windows.Forms.GroupBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
+            this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,6 +74,7 @@
             // 
             // WaveformPlots_groupBox
             // 
+            this.WaveformPlots_groupBox.Controls.Add(this.ActiveCurve_comboBox);
             this.WaveformPlots_groupBox.Controls.Add(this.TimeUnits_comboBox);
             this.WaveformPlots_groupBox.Location = new System.Drawing.Point(12, 797);
             this.WaveformPlots_groupBox.Name = "WaveformPlots_groupBox";
@@ -92,6 +94,16 @@
             this.TimeUnits_comboBox.Tag = "";
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
+            // 
+            // ActiveCurve_comboBox
+            // 
+            this.ActiveCurve_comboBox.FormattingEnabled = true;
+            this.ActiveCurve_comboBox.Location = new System.Drawing.Point(87, 19);
+            this.ActiveCurve_comboBox.Name = "ActiveCurve_comboBox";
+            this.ActiveCurve_comboBox.Size = new System.Drawing.Size(92, 21);
+            this.ActiveCurve_comboBox.TabIndex = 1;
+            this.ActiveCurve_comboBox.Text = "Active curve";
+            this.ActiveCurve_comboBox.SelectedIndexChanged += new System.EventHandler(this.ActiveCurve_comboBox_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -117,6 +129,7 @@
         private ZedGraph.ZedGraphControl zedGraphControl1;
         private System.Windows.Forms.GroupBox WaveformPlots_groupBox;
         private System.Windows.Forms.ComboBox TimeUnits_comboBox;
+        private System.Windows.Forms.ComboBox ActiveCurve_comboBox;
     }
 }
 
