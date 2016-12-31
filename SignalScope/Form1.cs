@@ -448,7 +448,7 @@ namespace SignalScope
 
         private void ActiveCurve_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            // Put something into 4 'Gates" comboboxes when active curve changes?
         }
 
         private void Meas_control_groupBox_Enter(object sender, EventArgs e)
@@ -462,6 +462,36 @@ namespace SignalScope
         }
 
         private void Meas_LowGate_t0_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Meas_LowGate_t1_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Meas_HighGate_t0_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Meas_HighGate_t1_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
         {
 
         }
