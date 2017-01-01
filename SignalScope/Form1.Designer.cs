@@ -34,22 +34,24 @@
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.WaveformPlots_groupBox = new System.Windows.Forms.GroupBox();
             this.Meas_control_groupBox = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.Meas_HighGate_t1_numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.Meas_HighGate_t0_numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.Meas_LowGate_t1_numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.Meas_LowGate_t0_numericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.Meas_LowGate_t1_numericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.Meas_HighGate_t0_numericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.Meas_HighGate_t1_numericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.AddMeas_button = new System.Windows.Forms.Button();
+            this.DisplayMeas_checkedListBox = new System.Windows.Forms.CheckedListBox();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.Meas_control_groupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // OpenSignal_button
@@ -102,6 +104,8 @@
             // 
             // Meas_control_groupBox
             // 
+            this.Meas_control_groupBox.Controls.Add(this.DisplayMeas_checkedListBox);
+            this.Meas_control_groupBox.Controls.Add(this.AddMeas_button);
             this.Meas_control_groupBox.Controls.Add(this.label4);
             this.Meas_control_groupBox.Controls.Add(this.label3);
             this.Meas_control_groupBox.Controls.Add(this.Meas_HighGate_t1_numericUpDown);
@@ -112,11 +116,68 @@
             this.Meas_control_groupBox.Controls.Add(this.label1);
             this.Meas_control_groupBox.Location = new System.Drawing.Point(185, 19);
             this.Meas_control_groupBox.Name = "Meas_control_groupBox";
-            this.Meas_control_groupBox.Size = new System.Drawing.Size(339, 130);
+            this.Meas_control_groupBox.Size = new System.Drawing.Size(482, 130);
             this.Meas_control_groupBox.TabIndex = 2;
             this.Meas_control_groupBox.TabStop = false;
             this.Meas_control_groupBox.Text = "Set Measurements";
             this.Meas_control_groupBox.Enter += new System.EventHandler(this.Meas_control_groupBox_Enter);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.Teal;
+            this.label4.Location = new System.Drawing.Point(178, 47);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(19, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "to:";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.Teal;
+            this.label3.Location = new System.Drawing.Point(24, 47);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(62, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Signal from:";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // Meas_HighGate_t1_numericUpDown
+            // 
+            this.Meas_HighGate_t1_numericUpDown.Location = new System.Drawing.Point(203, 45);
+            this.Meas_HighGate_t1_numericUpDown.Name = "Meas_HighGate_t1_numericUpDown";
+            this.Meas_HighGate_t1_numericUpDown.Size = new System.Drawing.Size(73, 20);
+            this.Meas_HighGate_t1_numericUpDown.TabIndex = 5;
+            this.Meas_HighGate_t1_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_HighGate_t1_numericUpDown_ValueChanged);
+            // 
+            // Meas_HighGate_t0_numericUpDown
+            // 
+            this.Meas_HighGate_t0_numericUpDown.Location = new System.Drawing.Point(93, 45);
+            this.Meas_HighGate_t0_numericUpDown.Name = "Meas_HighGate_t0_numericUpDown";
+            this.Meas_HighGate_t0_numericUpDown.Size = new System.Drawing.Size(73, 20);
+            this.Meas_HighGate_t0_numericUpDown.TabIndex = 4;
+            this.Meas_HighGate_t0_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_HighGate_t0_numericUpDown_ValueChanged);
+            // 
+            // Meas_LowGate_t1_numericUpDown
+            // 
+            this.Meas_LowGate_t1_numericUpDown.Location = new System.Drawing.Point(203, 19);
+            this.Meas_LowGate_t1_numericUpDown.Name = "Meas_LowGate_t1_numericUpDown";
+            this.Meas_LowGate_t1_numericUpDown.Size = new System.Drawing.Size(73, 20);
+            this.Meas_LowGate_t1_numericUpDown.TabIndex = 3;
+            this.Meas_LowGate_t1_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_LowGate_t1_numericUpDown_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Teal;
+            this.label2.Location = new System.Drawing.Point(178, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(19, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "to:";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // Meas_LowGate_t0_numericUpDown
             // 
@@ -159,62 +220,25 @@
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
             // 
-            // label2
+            // AddMeas_button
             // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Teal;
-            this.label2.Location = new System.Drawing.Point(178, 22);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(19, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "to:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.AddMeas_button.ForeColor = System.Drawing.Color.Purple;
+            this.AddMeas_button.Location = new System.Drawing.Point(6, 101);
+            this.AddMeas_button.Name = "AddMeas_button";
+            this.AddMeas_button.Size = new System.Drawing.Size(105, 23);
+            this.AddMeas_button.TabIndex = 8;
+            this.AddMeas_button.Text = "Add measurement";
+            this.AddMeas_button.UseVisualStyleBackColor = true;
+            this.AddMeas_button.Click += new System.EventHandler(this.AddMeas_button_Click);
             // 
-            // Meas_LowGate_t1_numericUpDown
+            // DisplayMeas_checkedListBox
             // 
-            this.Meas_LowGate_t1_numericUpDown.Location = new System.Drawing.Point(203, 19);
-            this.Meas_LowGate_t1_numericUpDown.Name = "Meas_LowGate_t1_numericUpDown";
-            this.Meas_LowGate_t1_numericUpDown.Size = new System.Drawing.Size(73, 20);
-            this.Meas_LowGate_t1_numericUpDown.TabIndex = 3;
-            this.Meas_LowGate_t1_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_LowGate_t1_numericUpDown_ValueChanged);
-            // 
-            // Meas_HighGate_t0_numericUpDown
-            // 
-            this.Meas_HighGate_t0_numericUpDown.Location = new System.Drawing.Point(93, 45);
-            this.Meas_HighGate_t0_numericUpDown.Name = "Meas_HighGate_t0_numericUpDown";
-            this.Meas_HighGate_t0_numericUpDown.Size = new System.Drawing.Size(73, 20);
-            this.Meas_HighGate_t0_numericUpDown.TabIndex = 4;
-            this.Meas_HighGate_t0_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_HighGate_t0_numericUpDown_ValueChanged);
-            // 
-            // Meas_HighGate_t1_numericUpDown
-            // 
-            this.Meas_HighGate_t1_numericUpDown.Location = new System.Drawing.Point(203, 45);
-            this.Meas_HighGate_t1_numericUpDown.Name = "Meas_HighGate_t1_numericUpDown";
-            this.Meas_HighGate_t1_numericUpDown.Size = new System.Drawing.Size(73, 20);
-            this.Meas_HighGate_t1_numericUpDown.TabIndex = 5;
-            this.Meas_HighGate_t1_numericUpDown.ValueChanged += new System.EventHandler(this.Meas_HighGate_t1_numericUpDown_ValueChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.Teal;
-            this.label3.Location = new System.Drawing.Point(24, 47);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(62, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Signal from:";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Teal;
-            this.label4.Location = new System.Drawing.Point(178, 47);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(19, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "to:";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+            this.DisplayMeas_checkedListBox.FormattingEnabled = true;
+            this.DisplayMeas_checkedListBox.Location = new System.Drawing.Point(286, 19);
+            this.DisplayMeas_checkedListBox.Name = "DisplayMeas_checkedListBox";
+            this.DisplayMeas_checkedListBox.Size = new System.Drawing.Size(89, 109);
+            this.DisplayMeas_checkedListBox.TabIndex = 9;
+            this.DisplayMeas_checkedListBox.SelectedIndexChanged += new System.EventHandler(this.DisplayMeas_checkedListBox_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -231,10 +255,10 @@
             this.WaveformPlots_groupBox.ResumeLayout(false);
             this.Meas_control_groupBox.ResumeLayout(false);
             this.Meas_control_groupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -256,6 +280,8 @@
         private System.Windows.Forms.NumericUpDown Meas_HighGate_t1_numericUpDown;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button AddMeas_button;
+        private System.Windows.Forms.CheckedListBox DisplayMeas_checkedListBox;
     }
 }
 

@@ -10,7 +10,7 @@ namespace SignalScope
     /// Usable measurements on a waveform:
     ///- zero offset and RMS noise (gated);
     ///- mean level or fit polyN (gated) and RMS noise;
-    ///- front (?)
+    ///- front (?) maybe later
     /// </summary>
 
     class WFMeasurement

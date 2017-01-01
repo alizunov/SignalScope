@@ -35,6 +35,9 @@ namespace SignalScope
             Color.Green,
             Color.Red };
 
+        // Names of individual measurement parameters in the checkedlistbox. Can be displayed or hidden.
+        string[] MeasNames = { "Offset mean", "Offset RMS", "Signal mean", "Signal RMS", "SNR", "DSNR", "Front 10-90%" };
+
         // List of Y-min (actual) values of all existing curves. Updates upon adding a new curve or modification of an existing one.
         List<double> YminCurves = new List<double>();
         // List of Y-max (actual) values of all existing curves. Updates upon adding a new curve or modification of an existing one.
@@ -65,6 +68,11 @@ namespace SignalScope
 
             // Init pane for graphics (title, fonts, axis, etc.)
             InitGraphPane();
+
+            // Fill the checkedlistbox of individual measurement parameters
+            DisplayMeas_checkedListBox.Items.AddRange(MeasNames);
+            // Changes the selection mode from double-click to single click.
+            DisplayMeas_checkedListBox.CheckOnClick = true;
 
         }
         // *** Ctor of the main window ***
@@ -492,6 +500,16 @@ namespace SignalScope
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddMeas_button_Click(object sender, EventArgs e)
+        {
+            // Add measurement code
+        }
+
+        private void DisplayMeas_checkedListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
