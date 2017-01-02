@@ -19,21 +19,16 @@ namespace SignalScope
         { get; set; }
 
         // Private members
-        private string[] MeasTags = { "Offset mean", "Offset RMS", "Signal mean", "Signal RMS", "SNR", "DSNR", "Front 10%-90%" };
 
-        private bool[] MeasFlags = { false, false, false, false, false, false, false };
+        /// <summary>
+        /// Fill color for time gate boxes.
+        /// </summary>
+        static private System.Drawing.Color Color_GateBox_fill = System.Drawing.Color.Beige;
 
-
-        private LineObj MarginLowGate_left
+        private BoxObj BoxLowGate
         { get; set; }
 
-        private LineObj MarginLowGate_right
-        { get; set; }
-
-        private LineObj MarginHighGate_left
-        { get; set; }
-
-        private LineObj MarginHighGate_right
+        private BoxObj BoxHighGate
         { get; set; }
 
         /// <summary>
@@ -61,43 +56,59 @@ namespace SignalScope
         { get; set; }
 
         /// <summary>
-        /// Coordinates on the curve where ArrowLowGate points from.
-        /// </summary>
-        private PointPair Coord_from_ArrowLowGate
-        { get; set; }
-
-        /// <summary>
-        /// Coordinates on the curve where ArrowLowGate points to.
-        /// </summary>
-        private PointPair Coord_to_ArrowLowGate
-        { get; set; }
-
-        /// <summary>
-        /// Coordinates on the curve where ArrowHighGate points from.
-        /// </summary>
-        private PointPair Coord_from_ArrowHighGate
-        { get; set; }
-
-        /// <summary>
-        /// Coordinates on the curve where ArrowHighGate points to.
-        /// </summary>
-        private PointPair Coord_to_ArrowHighGate
-        { get; set; }
-
-        private bool isShowLowGateMeas
-        { get; set; }
-
-        private bool isShowHighGateMeas
-        { get; set; }
-
-        /// <summary>
         /// Ctor with parameters
         /// </summary>
-        public WFMGraphics(WFMeasurement WFMeas, CurveItem crv)
+        public WFMGraphics(WFMeasurement WFMeas, GraphPane gp, CurveItem crv, string[] MeasTags, bool[] MeasFlags)
         {
             WFcurve = crv;
 
             // Assembly text of measurement
+            string mtext_lg = "";
+            string mtext_hg = "";
+            string pattern = "Offset"; // Will be used to split items between 'Low Gate" and 'High Gate' groups
+            for (int it=0; it < MeasTags.Length; it++)
+            {
+                if ( System.Text.RegularExpressions.Regex.IsMatch(MeasTags[it], pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase) ) // Put text to 'Low Gate'
+                    mtext_lg += (MeasFlags[it]) ? MeasTags[it] + " " : "";
+                else
+                    mtext_hg += (MeasFlags[it]) ? MeasTags[it] + " " : "";
+            }
+            double xscale = crv.GetXAxis(gp).Scale.Max - crv.GetXAxis(gp).Scale.Min;
+            double yscale = crv.GetYAxis(gp).Scale.Max - crv.GetYAxis(gp).Scale.Min;
+            double xtext_lg = (WFMeas.t0_LOW_gate + WFMeas.t1_LOW_gate) / 2 + 0.2 * xscale;
+            double ytext_lg = WFMeas.ZeroOffset + 0.2 * yscale;
+            double xtext_hg = (WFMeas.t0_HIGH_gate + WFMeas.t1_HIGH_gate) / 2 + 0.2 * xscale;
+            double ytext_hg = WFMeas.PulseMean + 0.2 * yscale;
+            TextLowGate = new TextObj(mtext_lg, xtext_lg, ytext_lg, CoordType.AxisXYScale, AlignH.Center, AlignV.Center);
+            // Border ON
+            TextLowGate.FontSpec.Border.IsVisible = true;
+            TextLowGate.FontSpec.FontColor = crv.Color;
+            TextLowGate.FontSpec.Border.Color = crv.Color;
+            // Add to the displayed object list
+            gp.GraphObjList.Add(TextLowGate);
+
+            // Create boxes displaying measurements time gates
+            // Low Gate:
+            double bwidth = WFMeas.t1_LOW_gate - WFMeas.t0_LOW_gate;
+            double bheight = 0.1 * (crv.GetYAxis(gp).Scale.Max - crv.GetYAxis(gp).Scale.Min);
+            double bx_lg = (WFMeas.t0_LOW_gate + WFMeas.t1_LOW_gate) / 2;
+            double by_lg = WFMeas.ZeroOffset;
+            BoxLowGate = new BoxObj(bx_lg, by_lg, bwidth, bheight, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
+            // High Gate:
+            bwidth = WFMeas.t1_HIGH_gate - WFMeas.t0_HIGH_gate;
+            double bx_hg = (WFMeas.t0_HIGH_gate + WFMeas.t1_HIGH_gate) / 2;
+            double by_hg = WFMeas.PulseMean;
+            BoxHighGate = new BoxObj(bx_hg, by_hg, bwidth, bheight, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
+
+            // Create arrows
+            float ArrowHeadSize = 50;
+            ArrowLowGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_lg, ytext_lg, bx_lg, by_lg);
+            ArrowHighGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_hg, ytext_hg, bx_hg, by_hg);
+            // Add to the displayed object list
+            gp.GraphObjList.Add(ArrowLowGate);
+            gp.GraphObjList.Add(ArrowHighGate);
+
+
         }
 
 

@@ -18,6 +18,8 @@ namespace SignalScope
     {
         // Data members
         List<Waveform> waves;
+        List<WFMeasurement> wmeas;
+        List<WFMGraphics> wmeasG;
         GraphPane gp;
 
         Color[] WFMcolor = new Color[] {
@@ -51,6 +53,7 @@ namespace SignalScope
         // *** Ctor of the main window ***
         public Form1()
         {
+            // Methods of Designer support
             InitializeComponent();
 
             zedGraphControl1.Visible = false;
@@ -58,6 +61,12 @@ namespace SignalScope
 
             // Create list of waveforms
             waves = new List<Waveform>();
+
+            // Create list of waveform measurements
+            wmeas = new List<WFMeasurement>();
+
+            // Create list of Graphs for waveform measurement
+            wmeasG = new List<WFMGraphics>();
 
             // Create Graph Pane
             gp = zedGraphControl1.GraphPane;
@@ -506,7 +515,13 @@ namespace SignalScope
 
         private void AddMeas_button_Click(object sender, EventArgs e)
         {
-            // Add measurement code
+            List<bool> flags = new List<bool>();
+            foreach (Object item in DisplayMeas_checkedListBox.Items)
+                flags.Add(((CheckBox)item).Checked);
+
+            // Prepare parameters t0, t1 for time gates
+            // and add WF measurement and a Graph for it
+
         }
 
         private void DisplayMeas_checkedListBox_SelectedIndexChanged(object sender, EventArgs e)
