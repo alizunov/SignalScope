@@ -25,14 +25,16 @@ namespace SignalScope
         Color[] WFMcolor = new Color[] {
             Color.Aquamarine,
             Color.Gold,
+            Color.BlueViolet,
             Color.Aqua,
             Color.Blue,
-            Color.BlueViolet,
             Color.Coral,
+            Color.CornflowerBlue,
             Color.Crimson,
             Color.Cyan,
             Color.DarkBlue,
             Color.DarkGreen,
+            Color.DarkCyan,
             Color.Orange,
             Color.Green,
             Color.Red };
@@ -74,6 +76,12 @@ namespace SignalScope
             // Definition of time units combobox items
             TimeUnits_comboBox.Items.AddRange(new object[] {"s", "ms", "us", "ns"});
             TimeUnits_comboBox.SelectedIndex = 0;
+
+            // NumericalUpDown entries for gate times
+            Meas_LowGate_t0_numericUpDown.DecimalPlaces = 9;
+            Meas_LowGate_t1_numericUpDown.DecimalPlaces = 9;
+            Meas_HighGate_t0_numericUpDown.DecimalPlaces = 9;
+            Meas_HighGate_t1_numericUpDown.DecimalPlaces = 9;
 
             // Init pane for graphics (title, fonts, axis, etc.)
             InitGraphPane();
@@ -386,8 +394,10 @@ namespace SignalScope
             zedGraphControl1.AxisChange();
             zedGraphControl1.Invalidate();
 
-            // Update actrive curve combobox
+            // Add item to the actrive curve combobox
             ActiveCurve_comboBox.Items.Add(gp.CurveList.Last().Label.Text);
+            // and make the last added curve active
+            ActiveCurve_comboBox.SelectedItem = gp.CurveList.Last().Label.Text;
         }
 
         /// <summary>
@@ -443,6 +453,34 @@ namespace SignalScope
             zedGraphControl1.Invalidate();
         }
 
+        /// <summary>
+        /// Sets left/right limits for each of 4 'Gate' fields from the curve X-axis scale
+        /// </summary>
+        private void SetGateMarginsFromCurveXaxis(CurveItem crv, bool isSetValue)
+        {
+            // Scale measurement 'Gate' time margins for the active curve
+            Meas_LowGate_t0_numericUpDown.Minimum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Min);
+            Meas_LowGate_t0_numericUpDown.Maximum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Max);
+            Meas_LowGate_t0_numericUpDown.Increment = Convert.ToDecimal(1 / crv.Points.Count);
+            if (isSetValue)
+                Meas_LowGate_t0_numericUpDown.Value = Meas_LowGate_t0_numericUpDown.Minimum;
+            Meas_LowGate_t1_numericUpDown.Minimum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Min);
+            Meas_LowGate_t1_numericUpDown.Maximum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Max);
+            Meas_LowGate_t1_numericUpDown.Increment = Convert.ToDecimal(1 / crv.Points.Count);
+
+            //MessageBox.Show("Min: " + Meas_LowGate_t0_numericUpDown.Minimum.ToString() + ", max: " + Meas_LowGate_t0_numericUpDown.Maximum.ToString());
+
+            Meas_HighGate_t0_numericUpDown.Minimum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Min);
+            Meas_HighGate_t0_numericUpDown.Maximum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Max);
+            Meas_HighGate_t0_numericUpDown.Increment = Convert.ToDecimal(1 / crv.Points.Count);
+            Meas_HighGate_t1_numericUpDown.Minimum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Min);
+            Meas_HighGate_t1_numericUpDown.Maximum = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Max);
+            Meas_HighGate_t1_numericUpDown.Increment = Convert.ToDecimal(1 / crv.Points.Count);
+            if (isSetValue)
+                Meas_HighGate_t1_numericUpDown.Value = Convert.ToDecimal(crv.GetXAxis(gp).Scale.Max);
+
+        }
+
 
         /// <summary>
         /// Update time axis labels and title depending on units chosen
@@ -450,7 +488,7 @@ namespace SignalScope
         private void TimeUnits_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Calculate the time scaling coeff from the previous time modifier and a new one
-            double TimeModifierPrev = TimeModifier;
+            double TimeModifierPrev = (TimeModifier != 0) ? TimeModifier : 1;
             TimeModifier = Math.Pow(10, 3 * TimeUnits_comboBox.SelectedIndex);
             double TimeScalingCoeff = TimeModifier / TimeModifierPrev;
             // Change Time axis text
@@ -461,11 +499,66 @@ namespace SignalScope
                 ModCurve(crv, "", TimeScalingCoeff, 1, crv.Color, 0);
                 //Console.WriteLine("ModCurve: curve {0}, time mod = {1}, prev = {2}, time scale = {3}", crv.Label.Text, TimeModifier, TimeModifierPrev, TimeScalingCoeff);
             }
+            // Scale measurement 'Gate' time margins for the active curve (if there is acive curve)
+            if (ActiveCurve_comboBox.SelectedItem != null)
+            {
+                string name = ActiveCurve_comboBox.SelectedItem.ToString();
+                CurveItem acrv = FindCurveByName(name, gp.CurveList);
+                SetGateMarginsFromCurveXaxis(acrv, true);
+            }
+            // Update graph pane
+            zedGraphControl1.AxisChange();
+            zedGraphControl1.Invalidate();
+
+        }
+
+        /// <summary>
+        /// Searches curves in the list by their names
+        /// </summary>
+        private CurveItem FindCurveByName(string crv_name, CurveList crv_list)
+        {
+            try
+            {
+                foreach (CurveItem crv in crv_list)
+                    if (crv.Label.Text == crv_name)
+                        return crv;
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FindCurveByName: error. Original message: " + ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Searches curves in the list by their names
+        /// </summary>
+        private Waveform FindWaveByName(string wave_name, List<Waveform> wfms)
+        {
+            try
+            {
+                foreach (Waveform wv in wfms) 
+                    if (wv.WaveFormName == wave_name)
+                        return wv;
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FindWaveByName: error. Original message: " + ex.Message);
+                return null;
+            }
         }
 
         private void ActiveCurve_comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Put something into 4 'Gates" comboboxes when active curve changes?
+            // Get active curve by its name
+            CurveItem acrv = FindCurveByName(ActiveCurve_comboBox.SelectedItem.ToString(), gp.CurveList);
+
+            // Set limits
+            bool isSetValue = (Meas_LowGate_t0_numericUpDown.Value == 0 && Meas_HighGate_t1_numericUpDown.Value == 0) ? true : false;
+            SetGateMarginsFromCurveXaxis(acrv, isSetValue);
+
         }
 
         private void Meas_control_groupBox_Enter(object sender, EventArgs e)
@@ -515,13 +608,49 @@ namespace SignalScope
 
         private void AddMeas_button_Click(object sender, EventArgs e)
         {
-            List<bool> flags = new List<bool>();
-            foreach (Object item in DisplayMeas_checkedListBox.Items)
-                flags.Add(((CheckBox)item).Checked);
+            try
+            {
+                List<bool> flags = new List<bool>();
+                flags.Clear();
+                for (int it = 0; it < DisplayMeas_checkedListBox.Items.Count; it++)
+                {
+                    bool state = (DisplayMeas_checkedListBox.GetItemCheckState(it) == CheckState.Checked) ? true : false;
+                    flags.Add(state);
+                }
 
-            // Prepare parameters t0, t1 for time gates
-            // and add WF measurement and a Graph for it
+                // Check the current time modifier:
+                // = 1 - times are set in s
+                // = 10^3 - times are set in ms
+                // ..
+                // Displayed values will be scaled upon change of time units (time modifier)
+                double t0_lg = Convert.ToDouble(Meas_LowGate_t0_numericUpDown.Value);
+                double t1_lg = Convert.ToDouble(Meas_LowGate_t1_numericUpDown.Value);
+                double t0_hg = Convert.ToDouble(Meas_HighGate_t0_numericUpDown.Value);
+                double t1_hg = Convert.ToDouble(Meas_HighGate_t1_numericUpDown.Value);
 
+                // Find active Waveform by the name of the active CURVE (from combo)
+                Waveform wave = FindWaveByName(ActiveCurve_comboBox.SelectedItem.ToString(), waves);
+
+                // Add measurement
+                wmeas.Add(new WFMeasurement(t0_lg, t1_lg, t0_hg, t1_hg, TimeModifier, wave, wmeas.Count));
+
+                //MessageBox.Show("Waveform " + wave.WaveFormName
+                //    + ": offset = " + wmeas.Last().ZeroOffset.ToString()
+                //    + ", pulse mean = " + wmeas.Last().PulseMean.ToString());
+
+                // Add graphics
+                wmeasG.Add(new WFMGraphics(wmeas.Last(), gp, FindCurveByName(ActiveCurve_comboBox.SelectedItem.ToString(), gp.CurveList), TimeModifier, MeasNames, flags.ToArray()));
+
+                // Update graph pane
+                zedGraphControl1.AxisChange();
+                zedGraphControl1.Invalidate();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Add measurement: error. Original message: " + ex.Message);
+            }
+            
         }
 
         private void DisplayMeas_checkedListBox_SelectedIndexChanged(object sender, EventArgs e)

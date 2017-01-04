@@ -16,6 +16,8 @@ namespace SignalScope
     class WFMeasurement
     {
         // Properties
+        public string Name
+        { get; set; }
         public double t0_LOW_gate
         { get; set; }
 
@@ -55,6 +57,12 @@ namespace SignalScope
         public double DSNR
         { get; set; }
 
+        /// <summary>
+        /// Transition time between signal levels 10% - 90%
+        /// </summary>
+        public double Front
+        { get; set; }
+
 
         /// <summary>
         /// True: use fit polyN to calculate stdev and SNR.
@@ -69,10 +77,33 @@ namespace SignalScope
         { get; set; }
 
         /// <summary>
+        /// All measurement in a list:
+        /// 0   :   Offset mean
+        /// 1   :   Offset RMS
+        /// 2   :   Signal mean
+        /// 3   :   Signal RMS
+        /// 4   :   SNR
+        /// 5   :   DSNR
+        /// 6   :   Front 10-90%
+        /// </summary>
+        public List<double> AllParams
+        { get; set; }
+
+        /// <summary>
         /// Ctor with parameters
         /// </summary>
-        public WFMeasurement(double t0_zero, double t1_zero, double t0_pulse, double t1_pulse, Waveform wave)
+        public WFMeasurement(double t0_zero, double t1_zero, double t0_pulse, double t1_pulse, double TimeScaleCoeff, Waveform wave, int MeasCount)
         {
+            // Set the name
+            Name = wave.WaveFormName + "-meas-" + MeasCount.ToString();
+            // Scale input gate times to the original units (s), since waveform time units are seconds
+            if (TimeScaleCoeff != 0)
+            {
+                t0_zero /= TimeScaleCoeff;
+                t1_zero /= TimeScaleCoeff;
+                t0_pulse /= TimeScaleCoeff;
+                t1_pulse /= TimeScaleCoeff;
+            }
             double tend_wave = wave.t(wave.Npoints);
             // 1. Check if t1 > t0 and reverse if not.
             if (t0_zero >= t1_zero)
@@ -146,6 +177,10 @@ namespace SignalScope
             }
 
             // Proceed with calculations
+            // *** Change this ***
+            Front = 0;
+
+
             if (!isGoodLowGate)
             {
                 ZeroOffset = ZeroNoiseRMS = SNR = DSNR = 0;
@@ -193,6 +228,20 @@ namespace SignalScope
                 SNR = Math.Abs(PulseMean / PulseNoiseRMS);
                 DSNR = Math.Abs((PulseMean - ZeroOffset) / PulseNoiseRMS);
             }
+            else
+            {
+                // Use fit polyN intead of mean level
+            }
+
+            // Fill the list
+            AllParams = new List<double>();
+            AllParams.Add(ZeroOffset);
+            AllParams.Add(ZeroNoiseRMS);
+            AllParams.Add(PulseMean);
+            AllParams.Add(PulseNoiseRMS);
+            AllParams.Add(SNR);
+            AllParams.Add(DSNR);
+            AllParams.Add(Front);
 
             
         }
