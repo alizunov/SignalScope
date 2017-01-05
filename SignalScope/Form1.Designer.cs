@@ -46,6 +46,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
+            this.ActiveMeas_comboBox = new System.Windows.Forms.ComboBox();
+            this.DeleteMeas_button = new System.Windows.Forms.Button();
+            this.DeleteWave_button = new System.Windows.Forms.Button();
+            this.ClearMeas_button = new System.Windows.Forms.Button();
+            this.ClearWaves_button = new System.Windows.Forms.Button();
+            this.UseFitPoly_checkBox = new System.Windows.Forms.CheckBox();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.Meas_control_groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).BeginInit();
@@ -90,6 +96,8 @@
             // 
             // WaveformPlots_groupBox
             // 
+            this.WaveformPlots_groupBox.Controls.Add(this.ClearWaves_button);
+            this.WaveformPlots_groupBox.Controls.Add(this.DeleteWave_button);
             this.WaveformPlots_groupBox.Controls.Add(this.Meas_control_groupBox);
             this.WaveformPlots_groupBox.Controls.Add(this.ActiveCurve_comboBox);
             this.WaveformPlots_groupBox.Controls.Add(this.TimeUnits_comboBox);
@@ -104,6 +112,10 @@
             // 
             // Meas_control_groupBox
             // 
+            this.Meas_control_groupBox.Controls.Add(this.UseFitPoly_checkBox);
+            this.Meas_control_groupBox.Controls.Add(this.ClearMeas_button);
+            this.Meas_control_groupBox.Controls.Add(this.DeleteMeas_button);
+            this.Meas_control_groupBox.Controls.Add(this.ActiveMeas_comboBox);
             this.Meas_control_groupBox.Controls.Add(this.DisplayMeas_checkedListBox);
             this.Meas_control_groupBox.Controls.Add(this.AddMeas_button);
             this.Meas_control_groupBox.Controls.Add(this.label4);
@@ -116,10 +128,10 @@
             this.Meas_control_groupBox.Controls.Add(this.label1);
             this.Meas_control_groupBox.Location = new System.Drawing.Point(185, 19);
             this.Meas_control_groupBox.Name = "Meas_control_groupBox";
-            this.Meas_control_groupBox.Size = new System.Drawing.Size(507, 130);
+            this.Meas_control_groupBox.Size = new System.Drawing.Size(713, 130);
             this.Meas_control_groupBox.TabIndex = 2;
             this.Meas_control_groupBox.TabStop = false;
-            this.Meas_control_groupBox.Text = "Set Measurements";
+            this.Meas_control_groupBox.Text = "Measurements";
             this.Meas_control_groupBox.Enter += new System.EventHandler(this.Meas_control_groupBox_Enter);
             // 
             // DisplayMeas_checkedListBox
@@ -240,6 +252,72 @@
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
             // 
+            // ActiveMeas_comboBox
+            // 
+            this.ActiveMeas_comboBox.FormattingEnabled = true;
+            this.ActiveMeas_comboBox.Location = new System.Drawing.Point(483, 18);
+            this.ActiveMeas_comboBox.Name = "ActiveMeas_comboBox";
+            this.ActiveMeas_comboBox.Size = new System.Drawing.Size(121, 21);
+            this.ActiveMeas_comboBox.TabIndex = 10;
+            this.ActiveMeas_comboBox.Text = "Active measurement";
+            this.ActiveMeas_comboBox.SelectedIndexChanged += new System.EventHandler(this.ActiveMeas_comboBox_SelectedIndexChanged);
+            // 
+            // DeleteMeas_button
+            // 
+            this.DeleteMeas_button.ForeColor = System.Drawing.Color.Red;
+            this.DeleteMeas_button.Location = new System.Drawing.Point(117, 71);
+            this.DeleteMeas_button.Name = "DeleteMeas_button";
+            this.DeleteMeas_button.Size = new System.Drawing.Size(105, 23);
+            this.DeleteMeas_button.TabIndex = 11;
+            this.DeleteMeas_button.Text = "Delete active";
+            this.DeleteMeas_button.UseVisualStyleBackColor = true;
+            this.DeleteMeas_button.Click += new System.EventHandler(this.DeleteMeas_button_Click);
+            // 
+            // DeleteWave_button
+            // 
+            this.DeleteWave_button.ForeColor = System.Drawing.Color.Red;
+            this.DeleteWave_button.Location = new System.Drawing.Point(87, 90);
+            this.DeleteWave_button.Name = "DeleteWave_button";
+            this.DeleteWave_button.Size = new System.Drawing.Size(92, 23);
+            this.DeleteWave_button.TabIndex = 3;
+            this.DeleteWave_button.Text = "Delete active";
+            this.DeleteWave_button.UseVisualStyleBackColor = true;
+            this.DeleteWave_button.Click += new System.EventHandler(this.DeleteWave_button_Click);
+            // 
+            // ClearMeas_button
+            // 
+            this.ClearMeas_button.ForeColor = System.Drawing.Color.Red;
+            this.ClearMeas_button.Location = new System.Drawing.Point(117, 101);
+            this.ClearMeas_button.Name = "ClearMeas_button";
+            this.ClearMeas_button.Size = new System.Drawing.Size(103, 23);
+            this.ClearMeas_button.TabIndex = 12;
+            this.ClearMeas_button.Text = "Clear all";
+            this.ClearMeas_button.UseVisualStyleBackColor = true;
+            this.ClearMeas_button.Click += new System.EventHandler(this.ClearMeas_button_Click);
+            // 
+            // ClearWaves_button
+            // 
+            this.ClearWaves_button.ForeColor = System.Drawing.Color.Red;
+            this.ClearWaves_button.Location = new System.Drawing.Point(87, 119);
+            this.ClearWaves_button.Name = "ClearWaves_button";
+            this.ClearWaves_button.Size = new System.Drawing.Size(92, 23);
+            this.ClearWaves_button.TabIndex = 4;
+            this.ClearWaves_button.Text = "Delete all";
+            this.ClearWaves_button.UseVisualStyleBackColor = true;
+            this.ClearWaves_button.Click += new System.EventHandler(this.ClearWaves_button_Click);
+            // 
+            // UseFitPoly_checkBox
+            // 
+            this.UseFitPoly_checkBox.AutoSize = true;
+            this.UseFitPoly_checkBox.ForeColor = System.Drawing.Color.Black;
+            this.UseFitPoly_checkBox.Location = new System.Drawing.Point(9, 75);
+            this.UseFitPoly_checkBox.Name = "UseFitPoly_checkBox";
+            this.UseFitPoly_checkBox.Size = new System.Drawing.Size(67, 17);
+            this.UseFitPoly_checkBox.TabIndex = 13;
+            this.UseFitPoly_checkBox.Text = "Fit signal";
+            this.UseFitPoly_checkBox.UseVisualStyleBackColor = true;
+            this.UseFitPoly_checkBox.CheckedChanged += new System.EventHandler(this.UseFitPoly_checkBox_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -282,6 +360,12 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button AddMeas_button;
         private System.Windows.Forms.CheckedListBox DisplayMeas_checkedListBox;
+        private System.Windows.Forms.ComboBox ActiveMeas_comboBox;
+        private System.Windows.Forms.Button DeleteMeas_button;
+        private System.Windows.Forms.Button DeleteWave_button;
+        private System.Windows.Forms.Button ClearMeas_button;
+        private System.Windows.Forms.Button ClearWaves_button;
+        private System.Windows.Forms.CheckBox UseFitPoly_checkBox;
     }
 }
 

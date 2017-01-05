@@ -88,6 +88,9 @@ namespace SignalScope
 
             // Fill the checkedlistbox of individual measurement parameters
             DisplayMeas_checkedListBox.Items.AddRange(MeasNames);
+            // Default state: Checked
+            for (int it = 0; it < DisplayMeas_checkedListBox.Items.Count; it++)
+                DisplayMeas_checkedListBox.SetItemChecked(it, true);
             // Changes the selection mode from double-click to single click.
             DisplayMeas_checkedListBox.CheckOnClick = true;
 
@@ -229,7 +232,7 @@ namespace SignalScope
                             }
                             // cols can be disposed
                             cols.Clear();
-                            Console.WriteLine("{0} waveforms created, {1} samples each.", Nwavefoms, waves.Last().Npoints);
+                            Console.WriteLine("{0} waveforms created: {1} samples.", Nwavefoms, waves.Last().Npoints);
                             // Make the ZedGraph visible and WFM groupbox active
                             if (!zedGraphControl1.Visible)
                                 zedGraphControl1.Visible = true;
@@ -513,7 +516,7 @@ namespace SignalScope
         }
 
         /// <summary>
-        /// Searches curves in the list by their names
+        /// Searches curves in the list by name
         /// </summary>
         private CurveItem FindCurveByName(string crv_name, CurveList crv_list)
         {
@@ -532,7 +535,7 @@ namespace SignalScope
         }
 
         /// <summary>
-        /// Searches curves in the list by their names
+        /// Searches curves in the list by name
         /// </summary>
         private Waveform FindWaveByName(string wave_name, List<Waveform> wfms)
         {
@@ -546,6 +549,25 @@ namespace SignalScope
             catch (Exception ex)
             {
                 Console.WriteLine("FindWaveByName: error. Original message: " + ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Searches WFMeasurement in the list by name
+        /// </summary>
+        private WFMeasurement FindMeasByName(string meas_name, List<WFMeasurement> wfms)
+        {
+            try
+            {
+                foreach (WFMeasurement wv in wfms) 
+                    if (wv.Name == meas_name)
+                        return wv;
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FindMeasByName: error. Original message: " + ex.Message);
                 return null;
             }
         }
@@ -645,6 +667,12 @@ namespace SignalScope
                 zedGraphControl1.AxisChange();
                 zedGraphControl1.Invalidate();
 
+                // Update ActiveMeas_comboBox
+                ActiveMeas_comboBox.Items.Add(wmeas.Last().Name);
+                // Select last added
+                ActiveMeas_comboBox.SelectedItem = wmeas.Last().Name;
+
+
             }
             catch (Exception ex)
             {
@@ -656,6 +684,135 @@ namespace SignalScope
         private void DisplayMeas_checkedListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void ActiveMeas_comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Deletes all measurement objects, updates lists and comboboxes
+        /// </summary>
+        private void DeleteMeas(WFMeasurement meas)
+        {
+            try
+            {
+                if (!wmeas.Contains(meas))
+                {
+                    MessageBox.Show("No measurement " + meas.Name + " in the list.");
+                    return;
+                }
+                string base_name = meas.Name;
+                if (base_name == "")
+                    return;
+                // Delete graph objects:
+                for (int igo = gp.GraphObjList.Count - 1; igo >= 0; igo--)
+                {
+                    GraphObj go = gp.GraphObjList.ElementAt(igo);
+                    string tag = go.Tag.ToString();
+                    if (tag.Contains(base_name))
+                        gp.GraphObjList.RemoveAt(igo);
+                }
+                // Update graph pane
+                zedGraphControl1.Invalidate();
+
+                // Remove WFMeasurement from the list
+                int mindex = wmeas.IndexOf(meas);
+                wmeas.Remove(meas);
+                // Remove WFMGraphics
+                wmeasG.RemoveAt(mindex);
+                // Update ActiveMeas_comboBox
+                ActiveMeas_comboBox.Items.RemoveAt(mindex);
+                int newindex = (ActiveMeas_comboBox.Items.Count > 0) ? ActiveMeas_comboBox.Items.Count - 1 : -1;
+                ActiveMeas_comboBox.SelectedIndex = newindex;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Delete measurement error. Original message: " + ex.Message);
+            }
+
+        }
+
+        private void DeleteMeas_button_Click(object sender, EventArgs e)
+        {
+            if (wmeas.Count == 0)
+            {
+                MessageBox.Show("List of measurements is empty.");
+                return;
+            }
+            WFMeasurement meas = FindMeasByName(ActiveMeas_comboBox.SelectedItem.ToString(), wmeas);
+            DeleteMeas(meas);
+        }
+
+        /// <summary>
+        /// Deletes all measurement objects, updates lists and comboboxes
+        /// </summary>
+        private void DeleteWave(Waveform wave)
+        {
+            if (wave == null)
+            {
+                MessageBox.Show("Delete waveform error: null waveform.");
+                return;
+            }
+            try
+            {
+                if (!waves.Contains(wave))
+                {
+                    MessageBox.Show("No waveform " + wave.WaveFormName + " in the list.");
+                    return;
+                }
+                // Delete all measurements associated with this waveform
+                for (int iw = wmeas.Count - 1; iw >= 0; iw--)
+                {
+                    if (wmeas.ElementAt(iw).Name.Contains(wave.WaveFormName))
+                        DeleteMeas(wmeas.ElementAt(iw));
+                }
+                // Delete curve
+                CurveItem crv = FindCurveByName(wave.WaveFormName, gp.CurveList);
+                // Update graph pane
+                zedGraphControl1.Invalidate();
+
+                if (crv != null)
+                {
+                    gp.CurveList.Remove(crv);
+                }
+                // Update the waveform list
+                int windex = waves.IndexOf(wave);
+                waves.Remove(wave);
+                // Update the combobox
+                ActiveCurve_comboBox.Items.RemoveAt(windex);
+                ActiveCurve_comboBox.SelectedIndex = (ActiveCurve_comboBox.Items.Count > 0) ? ActiveCurve_comboBox.Items.Count - 1 : -1;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Delete waveform error. Original message: " + ex.Message);
+            }
+
+        }
+
+
+        private void DeleteWave_button_Click(object sender, EventArgs e)
+        {
+            string wave_name = ActiveCurve_comboBox.SelectedItem.ToString();
+            DeleteWave(FindWaveByName(wave_name, waves));
+        }
+
+        private void ClearMeas_button_Click(object sender, EventArgs e)
+        {
+            for (int im = wmeas.Count - 1; im >= 0; im--)
+                DeleteMeas(wmeas.ElementAt(im));
+        }
+
+        private void ClearWaves_button_Click(object sender, EventArgs e)
+        {
+            for (int iw = waves.Count - 1; iw >= 0; iw--)
+                DeleteWave(waves.ElementAt(iw));
+        }
+
+        private void UseFitPoly_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // cont here ..
         }
     }
 }

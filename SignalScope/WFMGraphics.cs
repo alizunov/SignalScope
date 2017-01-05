@@ -23,7 +23,7 @@ namespace SignalScope
         /// <summary>
         /// Fill color for time gate boxes.
         /// </summary>
-        static private System.Drawing.Color Color_GateBox_fill = System.Drawing.Color.Bisque;
+        static private System.Drawing.Color Color_GateBox_fill = System.Drawing.Color.Lavender;
 
         private BoxObj BoxLowGate
         { get; set; }
@@ -86,6 +86,7 @@ namespace SignalScope
             double ytext_hg = WFMeas.PulseMean - psign * 0.2 * yscale;
 
             TextLowGate = new TextObj(mtext_lg, xtext_lg, ytext_lg, CoordType.AxisXYScale, AlignH.Center, AlignV.Center);
+            TextLowGate.Tag = WFMeas.Name + " Low Gate text";
             // Border ON
             TextLowGate.FontSpec.Border.IsVisible = true;
             TextLowGate.FontSpec.FontColor = System.Drawing.Color.Black;
@@ -93,6 +94,7 @@ namespace SignalScope
             TextLowGate.FontSpec.Size = 6;
 
             TextHighGate = new TextObj(mtext_hg, xtext_hg, ytext_hg, CoordType.AxisXYScale, AlignH.Center, AlignV.Center);
+            TextHighGate.Tag = WFMeas.Name + " High Gate text";
             // Border ON
             TextHighGate.FontSpec.Border.IsVisible = true;
             TextHighGate.FontSpec.FontColor = System.Drawing.Color.Black;
@@ -105,18 +107,19 @@ namespace SignalScope
 
             // Create boxes displaying measurements time gates
             // Low Gate:
-            double bwidth = Math.Abs((WFMeas.t1_LOW_gate - WFMeas.t0_LOW_gate) * TimeScale);
-            double bheight = Math.Abs(0.1 * (crv.GetYAxis(gp).Scale.Max - crv.GetYAxis(gp).Scale.Min));
+            double bwidth_lg = Math.Abs((WFMeas.t1_LOW_gate - WFMeas.t0_LOW_gate) * TimeScale);
+            double bheight_lg = Math.Abs(0.1 * (crv.GetYAxis(gp).Scale.Max - crv.GetYAxis(gp).Scale.Min));
             double bx_lg = WFMeas.t0_LOW_gate * TimeScale;
-            double by_lg = WFMeas.ZeroOffset + bheight / 2;
-            string blg_name = WFMeas.Name + " Low Gate box";
-            BoxLowGate = new BoxObj(bx_lg, by_lg, bwidth, bheight, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
-            BoxLowGate.Tag = blg_name;
+            double by_lg = WFMeas.ZeroOffset + bheight_lg / 2;
+            BoxLowGate = new BoxObj(bx_lg, by_lg, bwidth_lg, bheight_lg, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
+            BoxLowGate.Tag = WFMeas.Name + " Low Gate box";
             // High Gate:
-            bwidth = Math.Abs((WFMeas.t1_HIGH_gate - WFMeas.t0_HIGH_gate) * TimeScale);
+            double bwidth_hg = Math.Abs((WFMeas.t1_HIGH_gate - WFMeas.t0_HIGH_gate) * TimeScale);
+            double bheight_hg = bheight_lg;
             double bx_hg = WFMeas.t0_HIGH_gate * TimeScale;
-            double by_hg = WFMeas.PulseMean - psign * bheight / 2;
-            BoxHighGate = new BoxObj(bx_hg, by_hg, bwidth, bheight, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
+            double by_hg = WFMeas.PulseMean + bheight_hg / 2;
+            BoxHighGate = new BoxObj(bx_hg, by_hg, bwidth_hg, bheight_hg, crv.Color, Color_GateBox_fill, Color_GateBox_fill);
+            BoxHighGate.Tag = WFMeas.Name + " High Gate box";
             // Add to the displayed object list and
             gp.GraphObjList.Add(BoxLowGate);
             gp.GraphObjList.Add(BoxHighGate);
@@ -126,15 +129,17 @@ namespace SignalScope
 
             // Create arrows
             float ArrowHeadSize = 10;
-            ArrowLowGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_lg, ytext_lg, bx_lg + 0.05 * xscale, by_lg - bheight / 2);
-            ArrowHighGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_hg, ytext_hg, bx_hg + 0.05 * xscale, by_hg + psign * bheight / 2);
+            ArrowLowGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_lg, ytext_lg, bx_lg + 0.05 * xscale, by_lg - bheight_lg / 2);
+            ArrowLowGate.Tag = WFMeas.Name + " Low Gate arrow";
+            ArrowHighGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_hg, ytext_hg, bx_hg + 0.05 * xscale, by_hg - bheight_hg / 2);
+            ArrowHighGate.Tag = WFMeas.Name + " High Gate arrow";
             // Add to the displayed object list
             gp.GraphObjList.Add(ArrowLowGate);
             gp.GraphObjList.Add(ArrowHighGate);
 
-            Console.WriteLine("Low Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextLowGate.Text, xtext_lg, ytext_lg, bx_lg, by_lg);
-            Console.WriteLine("High Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextHighGate.Text, xtext_hg, ytext_hg, bx_hg, by_hg);
-            Console.WriteLine("Low gate box x, y, w, h: {0}, {1}, {2}, {3}.", bx_lg, by_lg, bwidth, bheight);
+            //Console.WriteLine("Low Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextLowGate.Text, xtext_lg, ytext_lg, bx_lg, by_lg);
+            //Console.WriteLine("High Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextHighGate.Text, xtext_hg, ytext_hg, bx_hg, by_hg);
+            //Console.WriteLine("Low gate box x, y, w, h: {0}, {1}, {2}, {3}.", bx_lg, by_lg, bwidth, bheight);
 
         }
 
