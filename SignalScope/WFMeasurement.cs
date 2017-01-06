@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using MathNet.Numerics;
+
 namespace SignalScope
 {
     /// <summary>
@@ -71,9 +73,39 @@ namespace SignalScope
         { get; set; }
         
         /// <summary>
+        /// Order of the fit polynom
+        /// </summary>
+        public double FitPolyOrder
+        { get; set; }
+
+        /// <summary>
         /// Coefficients of the fit polynom
         /// </summary>
         public List<double> FitPolyCoeff
+        { get; set; }
+
+        /// <summary>
+        /// Number of points in the signal fit range
+        /// </summary>
+        public int NpFitRange
+        { get; set; }
+
+        /// <summary>
+        /// Starting point of the fit range
+        /// </summary>
+        public int NpFit_0
+        { get; set; }
+
+        /// <summary>
+        /// List of X-values (times) of the fit range
+        /// </summary>
+        public List<double> XsigFit
+        { get; set; }
+
+        /// <summary>
+        /// List of Y-values of the fit polynom of the order N
+        /// </summary>
+        public List<double> YsigFit
         { get; set; }
 
         /// <summary>
@@ -90,12 +122,66 @@ namespace SignalScope
         { get; set; }
 
         /// <summary>
+        /// Function Poly(double x) or Poly (double[] x)
+        /// </summary>
+        public double Poly(double x, double[] p)
+        {
+            double v = 0;
+            for (int i = 0; i < p.Length; i++)
+                v += p[i] * Math.Pow(x, i);
+            return v;
+        }
+        public double[] Poly(double[] x, double[] p)
+        {
+            List<double> vl = new List<double>();
+            for (int ix = 0; ix < x.Length; ix++)
+            {
+                double v = 0;
+                for (int i = 0; i < p.Length; i++)
+                    v += p[i] * Math.Pow(x[ix], i);
+                vl.Add(v);
+            }
+            return vl.ToArray();
+        }
+
+        /// <summary>
+        /// Fits a polynom of the order N in the lists of X and Y. Returns the array of polynom coeffs.
+        /// </summary>
+        public double[] FitPoly(int N, List<double> X, List<double> Y)
+        {
+            double[] p = { };
+            // Limit the order of polinom to 100
+            if (N > 100)
+            {
+                Console.WriteLine("FitPoly error: order of polynom {0} must be <= 100. ", N);
+                return p;
+            }
+            try
+            {
+                p = Fit.Polynomial(X.ToArray(), Y.ToArray(), N);
+                Console.WriteLine("FitPoly: number of fit polynom coefficients: {0}. ", p.Length);
+                return p;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("FitPoly error: Could not make polynomial fit of the order {0}. Original error: " + ex.Message, N);
+                return null;
+            }
+
+        }
+
+
+        /// <summary>
         /// Ctor with parameters
         /// </summary>
-        public WFMeasurement(double t0_zero, double t1_zero, double t0_pulse, double t1_pulse, double TimeScaleCoeff, Waveform wave, int MeasCount)
+        public WFMeasurement(double t0_zero, double t1_zero, double t0_pulse, double t1_pulse, double TimeScaleCoeff, Waveform wave, int MeasCount, bool toFit = false, double Npoly = 0)
         {
             // Set the name
             Name = wave.WaveFormName + "-meas-" + MeasCount.ToString();
+            // Set members relating to polinomial fit
+            isFitPoly = toFit;
+            FitPolyOrder = Npoly;
+            NpFitRange = 0;
             // Scale input gate times to the original units (s), since waveform time units are seconds
             if (TimeScaleCoeff != 0)
             {
@@ -224,13 +310,36 @@ namespace SignalScope
                 {
                     val += Math.Pow(wave.u(ip) - PulseMean, 2);
                 }
-                PulseNoiseRMS = Math.Sqrt(val / (wave.np(t1_LOW_gate) - wave.np(t0_LOW_gate)));
+                PulseNoiseRMS = Math.Sqrt(val / (wave.np(t1_HIGH_gate) - wave.np(t0_HIGH_gate)));
                 SNR = Math.Abs(PulseMean / PulseNoiseRMS);
                 DSNR = Math.Abs((PulseMean - ZeroOffset) / PulseNoiseRMS);
             }
-            else
+            else if (Npoly > 0)
             {
                 // Use fit polyN intead of mean level
+                NpFitRange = wave.np(t1_HIGH_gate) - wave.np(t0_HIGH_gate);
+                NpFit_0 = wave.np(t0_HIGH_gate);
+                // List of Y samples of the signal to fit
+                List<double> Ysig = new List<double>(wave.Samples.GetRange(wave.np(t0_HIGH_gate), NpFitRange));
+                // Prepare list of X (times)
+                XsigFit = new List<double>();
+                for (int it = wave.np(t0_HIGH_gate); it < wave.np(t1_HIGH_gate); it++)
+                    XsigFit.Add(wave.t(it));
+                FitPolyCoeff = FitPoly((int)FitPolyOrder, XsigFit, Ysig).ToList();
+                // Replace the parameter of Pulse Mean, calculate SNR and DSNR
+                YsigFit = new List<double>(Poly(XsigFit.ToArray(), FitPolyCoeff.ToArray()));
+                PulseMean = YsigFit.Sum() / NpFitRange;
+                SNR = DSNR = 0;
+                PulseNoiseRMS = 0;
+                double val = 0;
+                for (int it = 0; it < NpFitRange; it++)
+                {
+                    val += Math.Pow(wave.u(it + NpFit_0) - YsigFit.ElementAt(it), 2);
+                }
+                PulseNoiseRMS = Math.Sqrt(val / NpFitRange);
+                SNR = Math.Abs(PulseMean / PulseNoiseRMS);
+                DSNR = Math.Abs((PulseMean - ZeroOffset) / PulseNoiseRMS);
+
             }
 
             // Fill the list

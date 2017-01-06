@@ -137,7 +137,7 @@
             // DisplayMeas_checkedListBox
             // 
             this.DisplayMeas_checkedListBox.FormattingEnabled = true;
-            this.DisplayMeas_checkedListBox.Location = new System.Drawing.Point(388, 15);
+            this.DisplayMeas_checkedListBox.Location = new System.Drawing.Point(423, 14);
             this.DisplayMeas_checkedListBox.Name = "DisplayMeas_checkedListBox";
             this.DisplayMeas_checkedListBox.Size = new System.Drawing.Size(89, 109);
             this.DisplayMeas_checkedListBox.TabIndex = 9;
@@ -158,7 +158,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.Teal;
-            this.label4.Location = new System.Drawing.Point(226, 47);
+            this.label4.Location = new System.Drawing.Point(257, 47);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(19, 13);
             this.label4.TabIndex = 7;
@@ -169,7 +169,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Teal;
-            this.label3.Location = new System.Drawing.Point(24, 47);
+            this.label3.Location = new System.Drawing.Point(49, 47);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(62, 13);
             this.label3.TabIndex = 6;
@@ -178,7 +178,7 @@
             // 
             // Meas_HighGate_t1_numericUpDown
             // 
-            this.Meas_HighGate_t1_numericUpDown.Location = new System.Drawing.Point(251, 45);
+            this.Meas_HighGate_t1_numericUpDown.Location = new System.Drawing.Point(286, 45);
             this.Meas_HighGate_t1_numericUpDown.Name = "Meas_HighGate_t1_numericUpDown";
             this.Meas_HighGate_t1_numericUpDown.Size = new System.Drawing.Size(127, 20);
             this.Meas_HighGate_t1_numericUpDown.TabIndex = 5;
@@ -186,7 +186,7 @@
             // 
             // Meas_HighGate_t0_numericUpDown
             // 
-            this.Meas_HighGate_t0_numericUpDown.Location = new System.Drawing.Point(93, 45);
+            this.Meas_HighGate_t0_numericUpDown.Location = new System.Drawing.Point(118, 45);
             this.Meas_HighGate_t0_numericUpDown.Name = "Meas_HighGate_t0_numericUpDown";
             this.Meas_HighGate_t0_numericUpDown.Size = new System.Drawing.Size(127, 20);
             this.Meas_HighGate_t0_numericUpDown.TabIndex = 4;
@@ -194,7 +194,7 @@
             // 
             // Meas_LowGate_t1_numericUpDown
             // 
-            this.Meas_LowGate_t1_numericUpDown.Location = new System.Drawing.Point(251, 19);
+            this.Meas_LowGate_t1_numericUpDown.Location = new System.Drawing.Point(286, 19);
             this.Meas_LowGate_t1_numericUpDown.Name = "Meas_LowGate_t1_numericUpDown";
             this.Meas_LowGate_t1_numericUpDown.Size = new System.Drawing.Size(127, 20);
             this.Meas_LowGate_t1_numericUpDown.TabIndex = 3;
@@ -204,7 +204,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.Teal;
-            this.label2.Location = new System.Drawing.Point(226, 22);
+            this.label2.Location = new System.Drawing.Point(257, 22);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(19, 13);
             this.label2.TabIndex = 2;
@@ -213,7 +213,7 @@
             // 
             // Meas_LowGate_t0_numericUpDown
             // 
-            this.Meas_LowGate_t0_numericUpDown.Location = new System.Drawing.Point(93, 19);
+            this.Meas_LowGate_t0_numericUpDown.Location = new System.Drawing.Point(118, 20);
             this.Meas_LowGate_t0_numericUpDown.Name = "Meas_LowGate_t0_numericUpDown";
             this.Meas_LowGate_t0_numericUpDown.Size = new System.Drawing.Size(127, 20);
             this.Meas_LowGate_t0_numericUpDown.TabIndex = 1;
@@ -223,7 +223,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Teal;
-            this.label1.Location = new System.Drawing.Point(6, 22);
+            this.label1.Location = new System.Drawing.Point(31, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 13);
             this.label1.TabIndex = 0;
@@ -255,7 +255,7 @@
             // ActiveMeas_comboBox
             // 
             this.ActiveMeas_comboBox.FormattingEnabled = true;
-            this.ActiveMeas_comboBox.Location = new System.Drawing.Point(483, 18);
+            this.ActiveMeas_comboBox.Location = new System.Drawing.Point(518, 18);
             this.ActiveMeas_comboBox.Name = "ActiveMeas_comboBox";
             this.ActiveMeas_comboBox.Size = new System.Drawing.Size(121, 21);
             this.ActiveMeas_comboBox.TabIndex = 10;
@@ -265,22 +265,22 @@
             // DeleteMeas_button
             // 
             this.DeleteMeas_button.ForeColor = System.Drawing.Color.Red;
-            this.DeleteMeas_button.Location = new System.Drawing.Point(117, 71);
+            this.DeleteMeas_button.Location = new System.Drawing.Point(118, 71);
             this.DeleteMeas_button.Name = "DeleteMeas_button";
-            this.DeleteMeas_button.Size = new System.Drawing.Size(105, 23);
+            this.DeleteMeas_button.Size = new System.Drawing.Size(128, 23);
             this.DeleteMeas_button.TabIndex = 11;
-            this.DeleteMeas_button.Text = "Delete active";
+            this.DeleteMeas_button.Text = "Delete measurement";
             this.DeleteMeas_button.UseVisualStyleBackColor = true;
             this.DeleteMeas_button.Click += new System.EventHandler(this.DeleteMeas_button_Click);
             // 
             // DeleteWave_button
             // 
             this.DeleteWave_button.ForeColor = System.Drawing.Color.Red;
-            this.DeleteWave_button.Location = new System.Drawing.Point(87, 90);
+            this.DeleteWave_button.Location = new System.Drawing.Point(71, 90);
             this.DeleteWave_button.Name = "DeleteWave_button";
-            this.DeleteWave_button.Size = new System.Drawing.Size(92, 23);
+            this.DeleteWave_button.Size = new System.Drawing.Size(108, 23);
             this.DeleteWave_button.TabIndex = 3;
-            this.DeleteWave_button.Text = "Delete active";
+            this.DeleteWave_button.Text = "Delete active curve";
             this.DeleteWave_button.UseVisualStyleBackColor = true;
             this.DeleteWave_button.Click += new System.EventHandler(this.DeleteWave_button_Click);
             // 
@@ -289,20 +289,20 @@
             this.ClearMeas_button.ForeColor = System.Drawing.Color.Red;
             this.ClearMeas_button.Location = new System.Drawing.Point(117, 101);
             this.ClearMeas_button.Name = "ClearMeas_button";
-            this.ClearMeas_button.Size = new System.Drawing.Size(103, 23);
+            this.ClearMeas_button.Size = new System.Drawing.Size(128, 23);
             this.ClearMeas_button.TabIndex = 12;
-            this.ClearMeas_button.Text = "Clear all";
+            this.ClearMeas_button.Text = "Clear all measurements";
             this.ClearMeas_button.UseVisualStyleBackColor = true;
             this.ClearMeas_button.Click += new System.EventHandler(this.ClearMeas_button_Click);
             // 
             // ClearWaves_button
             // 
             this.ClearWaves_button.ForeColor = System.Drawing.Color.Red;
-            this.ClearWaves_button.Location = new System.Drawing.Point(87, 119);
+            this.ClearWaves_button.Location = new System.Drawing.Point(71, 119);
             this.ClearWaves_button.Name = "ClearWaves_button";
-            this.ClearWaves_button.Size = new System.Drawing.Size(92, 23);
+            this.ClearWaves_button.Size = new System.Drawing.Size(108, 23);
             this.ClearWaves_button.TabIndex = 4;
-            this.ClearWaves_button.Text = "Delete all";
+            this.ClearWaves_button.Text = "Delete all curves";
             this.ClearWaves_button.UseVisualStyleBackColor = true;
             this.ClearWaves_button.Click += new System.EventHandler(this.ClearWaves_button_Click);
             // 

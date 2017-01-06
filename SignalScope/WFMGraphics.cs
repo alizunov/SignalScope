@@ -56,6 +56,12 @@ namespace SignalScope
         { get; set; }
 
         /// <summary>
+        /// Polynomial fit witin the specified range in WFMeasurement object
+        /// </summary>
+        private LineItem FitCurve
+        { get; set; }
+            
+        /// <summary>
         /// Ctor with parameters
         /// </summary>
         public WFMGraphics(WFMeasurement WFMeas, GraphPane gp, CurveItem crv, double TimeScale, string[] MeasTags, bool[] MeasFlags)
@@ -67,12 +73,13 @@ namespace SignalScope
             string mtext_lg = "";
             string mtext_hg = "";
             string pattern = "Offset"; // Will be used to split items between 'Low Gate" and 'High Gate' groups
+            int digits = 3;
             for (int it=0; it < MeasTags.Length; it++)
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(MeasTags[it], pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) // Put text to 'Low Gate'
-                    mtext_lg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), 2).ToString() + " " : "";
+                    mtext_lg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "; " : "";
                 else
-                    mtext_hg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), 2).ToString() + " " : "";
+                    mtext_hg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "; " : "";
             }
             // Define the pulse sign depending on relation between the offset and the pulse mean:
             double psign = Math.Sign(WFMeas.PulseMean - WFMeas.ZeroOffset);
@@ -136,6 +143,21 @@ namespace SignalScope
             // Add to the displayed object list
             gp.GraphObjList.Add(ArrowLowGate);
             gp.GraphObjList.Add(ArrowHighGate);
+
+            // Add curve for the fit polinom if the WFMeasurement.isFitPoly == true
+            if (WFMeas.isFitPoly)
+            {
+                PointPairList fit_ppl = new PointPairList();
+                // Need a loop to scale time values (multiply by TimeScale)
+                for (int it = 0; it < WFMeas.NpFitRange; it++)
+                    fit_ppl.Add(WFMeas.XsigFit.ElementAt(it) * TimeScale, WFMeas.YsigFit.ElementAt(it));
+                string fitName = WFMeas.Name + "-fit";
+                FitCurve = gp.AddCurve(fitName, fit_ppl, System.Drawing.Color.Black, SymbolType.None);
+                FitCurve.Line.Width = 1;
+                // Why this doen't work ??
+                int index = gp.CurveList.IndexOf(fitName);
+                gp.CurveList.Move(index, 1);
+            }
 
             //Console.WriteLine("Low Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextLowGate.Text, xtext_lg, ytext_lg, bx_lg, by_lg);
             //Console.WriteLine("High Gate: arrow ({0}, {1}) --> ({2}, {3}); text: " + TextHighGate.Text, xtext_hg, ytext_hg, bx_hg, by_hg);

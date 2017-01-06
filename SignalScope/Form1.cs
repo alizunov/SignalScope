@@ -153,7 +153,7 @@ namespace SignalScope
                             str1 = stReader.ReadLine(); // Time, Ampl
                             words = Regex.Split(str1, pattern);
                             Nwavefoms = words.Length - 1;
-                            Console.WriteLine("Presumably, a Lecroy TRC file header with {0} columns: " + str1, words.Length);
+                            Console.WriteLine("Lecroy TRC file header with {0} columns: " + str1, words.Length);
                         }
                         else if (words[0] == "SomethingElse")
                         {
@@ -164,7 +164,7 @@ namespace SignalScope
                         else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
                         {
                             Nwavefoms = words.Length - 1;
-                            Console.WriteLine("Presumably, a Tektronix CSV file header with {0} columns: " + str1, words.Length);
+                            Console.WriteLine("Tektronix CSV file header with {0} columns: " + str1, words.Length);
                         }
                         else // Binary?
                         {
@@ -654,7 +654,10 @@ namespace SignalScope
                 Waveform wave = FindWaveByName(ActiveCurve_comboBox.SelectedItem.ToString(), waves);
 
                 // Add measurement
-                wmeas.Add(new WFMeasurement(t0_lg, t1_lg, t0_hg, t1_hg, TimeModifier, wave, wmeas.Count));
+                bool fitFlag = UseFitPoly_checkBox.Checked;
+                // Order of the fit polynom
+                double fitNpoly = 9;
+                wmeas.Add(new WFMeasurement(t0_lg, t1_lg, t0_hg, t1_hg, TimeModifier, wave, wmeas.Count, fitFlag, fitNpoly));
 
                 //MessageBox.Show("Waveform " + wave.WaveFormName
                 //    + ": offset = " + wmeas.Last().ZeroOffset.ToString()
