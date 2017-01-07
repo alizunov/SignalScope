@@ -38,6 +38,9 @@ namespace SignalScope
         public double ZeroNoiseRMS
         { get; set; }
 
+        public double ZeroNoisePkPk
+        { get; set; }
+
         /// <summary>
         /// Mean value for the 'flat' case (if isFitPoly = false)
         /// </summary>
@@ -45,6 +48,9 @@ namespace SignalScope
         { get; set; }
 
         public double PulseNoiseRMS
+        { get; set; }
+
+        public double PulseNoisePkPk
         { get; set; }
 
         /// <summary>
@@ -112,11 +118,13 @@ namespace SignalScope
         /// All measurement in a list:
         /// 0   :   Offset mean
         /// 1   :   Offset RMS
-        /// 2   :   Signal mean
-        /// 3   :   Signal RMS
-        /// 4   :   SNR
-        /// 5   :   DSNR
-        /// 6   :   Front 10-90%
+        /// 2   :   Offset Pk-Pk
+        /// 3   :   Signal mean
+        /// 4   :   Signal RMS
+        /// 5   :   Signal Pk-Pk
+        /// 6   :   SNR
+        /// 7   :   DSNR
+        /// 8   :   Front 10-90%
         /// </summary>
         public List<double> AllParams
         { get; set; }
@@ -263,10 +271,6 @@ namespace SignalScope
             }
 
             // Proceed with calculations
-            // *** Change this ***
-            Front = 0;
-
-
             if (!isGoodLowGate)
             {
                 ZeroOffset = ZeroNoiseRMS = SNR = DSNR = 0;
@@ -274,6 +278,8 @@ namespace SignalScope
             else // isGoodLowGate OK
             {
                 double val = 0;
+                double vmin = Double.MaxValue;
+                double vmax = Double.MinValue;
                 // ZeroOffset
                 for (int ip = wave.np(t0_LOW_gate); ip < wave.np(t1_LOW_gate); ip++)
                 {
@@ -286,8 +292,11 @@ namespace SignalScope
                 for (int ip = wave.np(t0_LOW_gate); ip < wave.np(t1_LOW_gate); ip++)
                 {
                     val += Math.Pow(wave.u(ip) - ZeroOffset, 2);
+                    vmin = (wave.u(ip) - ZeroOffset < vmin) ? wave.u(ip) - ZeroOffset : vmin;
+                    vmax = (wave.u(ip) - ZeroOffset > vmax) ? wave.u(ip) - ZeroOffset : vmax;
                 }
                 ZeroNoiseRMS = Math.Sqrt(val / (wave.np(t1_LOW_gate) - wave.np(t0_LOW_gate)));
+                ZeroNoisePkPk = vmax - vmin;
             }
 
             if (!isGoodHighGate)
@@ -297,6 +306,8 @@ namespace SignalScope
             else if (!isFitPoly) // isGoodHighGate OK, flat-top
             {
                 double val = 0;
+                double vmin = Double.MaxValue;
+                double vmax = Double.MinValue;
                 // PulseMean
                 for (int ip = wave.np(t0_HIGH_gate); ip < wave.np(t1_HIGH_gate); ip++)
                 {
@@ -309,8 +320,11 @@ namespace SignalScope
                 for (int ip = wave.np(t0_HIGH_gate); ip < wave.np(t1_HIGH_gate); ip++)
                 {
                     val += Math.Pow(wave.u(ip) - PulseMean, 2);
+                    vmin = (wave.u(ip) - PulseMean < vmin) ? wave.u(ip) - PulseMean : vmin;
+                    vmax = (wave.u(ip) - PulseMean > vmax) ? wave.u(ip) - PulseMean : vmax;
                 }
                 PulseNoiseRMS = Math.Sqrt(val / (wave.np(t1_HIGH_gate) - wave.np(t0_HIGH_gate)));
+                PulseNoisePkPk = vmax - vmin;
                 SNR = Math.Abs(PulseMean / PulseNoiseRMS);
                 DSNR = Math.Abs((PulseMean - ZeroOffset) / PulseNoiseRMS);
             }
@@ -342,12 +356,42 @@ namespace SignalScope
 
             }
 
-            // Fill the list
+            // Front 10-90%
+            double DeltaU = Math.Abs(PulseMean - ZeroOffset);
+            double tau_0 = t1_LOW_gate;
+            double tau_1 = t0_HIGH_gate;
+            if (tau_1 <= tau_0)
+            {
+                Front = -1;
+                return;
+            }
+            for (double t = tau_0; t < tau_1; t += wave.dt)
+            {
+                if (Math.Abs(wave.u(t) - ZeroOffset) >= 0.1 * DeltaU)
+                {
+                    tau_0 = t;
+                    break;
+                }
+            }
+            for (double t = tau_0; t < tau_1; t += wave.dt)
+            {
+                if (Math.Abs(wave.u(t) - ZeroOffset) >= 0.9 * DeltaU)
+                {
+                    tau_1 = t;
+                    break;
+                }
+            }
+            Front = (tau_1 - tau_0) * 1e9;  // In ns
+            //Console.WriteLine("Tau_0 = {0}, tau_1 = {1}, front = {2}.", tau_0, tau_1, Front);
+
+            // Fill the consolidated parameter list
             AllParams = new List<double>();
             AllParams.Add(ZeroOffset);
             AllParams.Add(ZeroNoiseRMS);
+            AllParams.Add(ZeroNoisePkPk);
             AllParams.Add(PulseMean);
             AllParams.Add(PulseNoiseRMS);
+            AllParams.Add(PulseNoisePkPk);
             AllParams.Add(SNR);
             AllParams.Add(DSNR);
             AllParams.Add(Front);

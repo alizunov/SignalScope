@@ -77,9 +77,9 @@ namespace SignalScope
             for (int it=0; it < MeasTags.Length; it++)
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(MeasTags[it], pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) // Put text to 'Low Gate'
-                    mtext_lg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "; " : "";
+                    mtext_lg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "\n" : "";
                 else
-                    mtext_hg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "; " : "";
+                    mtext_hg += (MeasFlags[it]) ? MeasTags[it] + "=" + Math.Round(WFMeas.AllParams.ElementAt(it), digits).ToString() + "\n" : "";
             }
             // Define the pulse sign depending on relation between the offset and the pulse mean:
             double psign = Math.Sign(WFMeas.PulseMean - WFMeas.ZeroOffset);
@@ -92,7 +92,7 @@ namespace SignalScope
             double xtext_hg = WFMeas.t0_HIGH_gate * TimeScale + 0.2 * xscale;
             double ytext_hg = WFMeas.PulseMean - psign * 0.2 * yscale;
 
-            TextLowGate = new TextObj(mtext_lg, xtext_lg, ytext_lg, CoordType.AxisXYScale, AlignH.Center, AlignV.Center);
+            TextLowGate = new TextObj(mtext_lg, xtext_lg, ytext_lg, CoordType.AxisXYScale, AlignH.Left, AlignV.Center);
             TextLowGate.Tag = WFMeas.Name + " Low Gate text";
             // Border ON
             TextLowGate.FontSpec.Border.IsVisible = true;
@@ -100,7 +100,7 @@ namespace SignalScope
             TextLowGate.FontSpec.Border.Color = crv.Color;
             TextLowGate.FontSpec.Size = 6;
 
-            TextHighGate = new TextObj(mtext_hg, xtext_hg, ytext_hg, CoordType.AxisXYScale, AlignH.Center, AlignV.Center);
+            TextHighGate = new TextObj(mtext_hg, xtext_hg, ytext_hg, CoordType.AxisXYScale, AlignH.Left, AlignV.Center);
             TextHighGate.Tag = WFMeas.Name + " High Gate text";
             // Border ON
             TextHighGate.FontSpec.Border.IsVisible = true;

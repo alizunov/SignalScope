@@ -40,7 +40,15 @@ namespace SignalScope
             Color.Red };
 
         // Names of individual measurement parameters in the checkedlistbox. Can be displayed or hidden.
-        string[] MeasNames = { "Offset mean", "Offset RMS", "Signal mean", "Signal RMS", "SNR", "DSNR", "Front 10-90%" };
+        string[] MeasNames = { "Offset mean",
+            "Offset RMS",
+            "Offset Pk-Pk",
+            "Signal mean",
+            "Signal RMS",
+            "Signal Pk-Pk",
+            "SNR",
+            "DSNR",
+            "Front 10-90%" };
 
         // List of Y-min (actual) values of all existing curves. Updates upon adding a new curve or modification of an existing one.
         List<double> YminCurves = new List<double>();
