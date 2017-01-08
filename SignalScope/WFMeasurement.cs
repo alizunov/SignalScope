@@ -328,7 +328,7 @@ namespace SignalScope
                 SNR = Math.Abs(PulseMean / PulseNoiseRMS);
                 DSNR = Math.Abs((PulseMean - ZeroOffset) / PulseNoiseRMS);
             }
-            else if (Npoly > 0)
+            else if (isFitPoly && Npoly > 0)
             {
                 // Use fit polyN intead of mean level
                 NpFitRange = wave.np(t1_HIGH_gate) - wave.np(t0_HIGH_gate);
