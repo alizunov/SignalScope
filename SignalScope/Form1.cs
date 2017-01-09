@@ -26,7 +26,7 @@ namespace SignalScope
             Color.Aquamarine,
             Color.Gold,
             Color.BlueViolet,
-            Color.Aqua,
+            Color.DarkRed,
             Color.Blue,
             Color.Coral,
             Color.CornflowerBlue,
@@ -124,129 +124,136 @@ namespace SignalScope
             openFileDialog1.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
+            // Enable selection of multiple files
+            openFileDialog1.Multiselect = true;
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    foreach (string file in openFileDialog1.FileNames)
                     {
-                        System.IO.StreamReader stReader = new System.IO.StreamReader(myStream);
-
-                        string str1 = stReader.ReadLine();
-                        // Discover the header ..
-                        // We can handle the following text records from scopes:
-                        // 1. Tektronix's CSV:
-                        // s, Volts1, Volts2, Volts3, Volts4
-                        // -1.944e-006, 0, 0, 0, 0
-                        // ...
-                        // 2. LeCroy's TRC:
-                        //LECROYMAUI,0,Waveform
-                        //Segments,1,SegmentSize,25002
-                        //Segment,TrigTime,TimeSinceSegment1
-                        //#1,24-Feb-2016 16:34:36,0                 
-                        //Time, Ampl1, Ampl2, Ampl3, Ampl4
-                        //-5.0003623e-006,-0.03, 0, 0, 0
-                        // ...
-                        bool isTextFile = true;
-                        string pattern = @"\s*\t*,\s*\t*";
-                        string[] words = Regex.Split(str1, pattern);
-                        int Nwavefoms = 0;   // Number of waveforms
-
-                        if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
+                        if ((myStream = File.Open(file, FileMode.Open)) != null)
                         {
-                            stReader.ReadLine();
-                            stReader.ReadLine();
-                            stReader.ReadLine();
-                            str1 = stReader.ReadLine(); // Time, Ampl
-                            words = Regex.Split(str1, pattern);
-                            Nwavefoms = words.Length - 1;
-                            Console.WriteLine("Lecroy TRC file header with {0} columns: " + str1, words.Length);
-                        }
-                        else if (words[0] == "SomethingElse")
-                        {
-                            // Skip several lines.
-                            //str1 = stReader.ReadLine(); // Time, Ampl
-                            //words = str1.Split(delimiterChars);
-                        }
-                        else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
-                        {
-                            Nwavefoms = words.Length - 1;
-                            Console.WriteLine("Tektronix CSV file header with {0} columns: " + str1, words.Length);
-                        }
-                        else // Binary?
-                        {
-                            MessageBox.Show("No text pattern matches, assumed binary file. String:  " + str1);
-                            // Add code to parse binary header !
-                            isTextFile = false;
-                        }
+                            System.IO.StreamReader stReader = new System.IO.StreamReader(myStream);
 
-                        if (Nwavefoms > 0)
-                        {
-                            //MessageBox.Show("Columns in the input file: " + words.Length.ToString() + ", header string: " + str1);
-                            List< List<double> > cols = new List< List<double> >();
-                            for (int icol = 0; icol < Nwavefoms + 1; icol++)    // +1 for time column
-                                cols.Add(new List<double>());
+                            string str1 = stReader.ReadLine();
+                            // Discover the header ..
+                            // We can handle the following text records from scopes:
+                            // 1. Tektronix's CSV:
+                            // s, Volts1, Volts2, Volts3, Volts4
+                            // -1.944e-006, 0, 0, 0, 0
+                            // ...
+                            // 2. LeCroy's TRC:
+                            //LECROYMAUI,0,Waveform
+                            //Segments,1,SegmentSize,25002
+                            //Segment,TrigTime,TimeSinceSegment1
+                            //#1,24-Feb-2016 16:34:36,0                 
+                            //Time, Ampl1, Ampl2, Ampl3, Ampl4
+                            //-5.0003623e-006,-0.03, 0, 0, 0
+                            // ...
+                            bool isTextFile = true;
+                            string pattern = @"\s*\t*,\s*\t*";
+                            string[] words = Regex.Split(str1, pattern);
+                            int Nwavefoms = 0;   // Number of waveforms
 
-                            // Get the file size in bytes
-                            FileInfo fi = new FileInfo(openFileDialog1.FileName);
-                            long FileSize = fi.Length;
-                            Console.WriteLine("File size: {0} bytes", FileSize);
-
-                            if (isTextFile)
+                            if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
                             {
-                                int StrSize = 0;
-                                int StrNumPercent = 0;
-                                int StrCount = 0;
-                                // Init the progress bar
-                                FileRead_progressBar.Minimum = 0;
-                                FileRead_progressBar.Maximum = 100;
-                                FileRead_progressBar.Step = 1;
-                                // *** Readout TEXT loop ***
-                                while ((str1 = stReader.ReadLine()) != null)
+                                stReader.ReadLine();
+                                stReader.ReadLine();
+                                stReader.ReadLine();
+                                str1 = stReader.ReadLine(); // Time, Ampl
+                                words = Regex.Split(str1, pattern);
+                                Nwavefoms = words.Length - 1;
+                                Console.WriteLine("Lecroy TRC file header with {0} columns: " + str1, words.Length);
+                            }
+                            else if (words[0] == "SomethingElse")
+                            {
+                                // Skip several lines.
+                                //str1 = stReader.ReadLine(); // Time, Ampl
+                                //words = str1.Split(delimiterChars);
+                            }
+                            else if (words[0] == "s" && words.Length > 1)   // Tektronix .CSV text file
+                            {
+                                Nwavefoms = words.Length - 1;
+                                Console.WriteLine("Tektronix CSV file header with {0} columns: " + str1, words.Length);
+                            }
+                            else // Binary?
+                            {
+                                MessageBox.Show("No text pattern matches, assumed binary file. String:  " + str1);
+                                // Add code to parse binary header !
+                                isTextFile = false;
+                            }
+
+                            if (Nwavefoms > 0)
+                            {
+                                //MessageBox.Show("Columns in the input file: " + words.Length.ToString() + ", header string: " + str1);
+                                List<List<double>> cols = new List<List<double>>();
+                                for (int icol = 0; icol < Nwavefoms + 1; icol++)    // +1 for time column
+                                    cols.Add(new List<double>());
+
+                                // Get the file size in bytes
+                                FileInfo fi = new FileInfo(openFileDialog1.FileName);
+                                long FileSize = fi.Length;
+                                Console.WriteLine("File size: {0} bytes", FileSize);
+
+                                if (isTextFile)
                                 {
-                                    if (StrSize == 0)
+                                    int StrSize = 0;
+                                    int StrNumPercent = 0;
+                                    int StrCount = 0;
+                                    // Init the progress bar
+                                    FileRead_progressBar.Minimum = 0;
+                                    FileRead_progressBar.Maximum = 100;
+                                    FileRead_progressBar.Step = 1;
+                                    FileRead_progressBar.Value = 0;
+                                    // *** Readout TEXT loop ***
+                                    while ((str1 = stReader.ReadLine()) != null)
                                     {
-                                        StrSize = str1.Length * sizeof(Char);
-                                        StrNumPercent = (int)FileSize / StrSize / 100;
+                                        if (StrSize == 0)
+                                        {
+                                            StrSize = str1.Length * sizeof(Char);
+                                            StrNumPercent = (int)FileSize / StrSize / 100;
+                                        }
+                                        if (++StrCount >= StrNumPercent)
+                                        {
+                                            FileRead_progressBar.PerformStep();
+                                            StrCount = 0;
+                                        }
+                                        words = Regex.Split(str1, pattern);
+                                        for (int icol = 0; icol < Nwavefoms + 1; icol++)
+                                        {
+                                            //Console.WriteLine("Word count: {0}, words: " + words[0] + " " + words[1], words.Length);
+                                            cols[icol].Add(Convert.ToDouble(words[icol]));
+                                        }
                                     }
-                                    if (++StrCount >= StrNumPercent)
-                                    {
-                                        FileRead_progressBar.PerformStep();
-                                        StrCount = 0;
-                                    }
-                                    words = Regex.Split(str1, pattern);
-                                   for (int icol = 0; icol < Nwavefoms + 1; icol++)
-                                    {
-                                        //Console.WriteLine("Word count: {0}, words: " + words[0] + " " + words[1], words.Length);
-                                        cols[icol].Add(Convert.ToDouble(words[icol]));
-                                    }
+                                    // *** Readout TEXT loop ***
                                 }
-                                // *** Readout TEXT loop ***
-                            }
-                            else
-                            {
-                                MessageBox.Show("Readout of a binary file not implemented yet.");
-                            }
+                                else
+                                {
+                                    MessageBox.Show("Readout of a binary file not implemented yet.");
+                                }
 
-                            double tstart = cols.ElementAt(0).ElementAt(0);
-                            double tend = cols.ElementAt(0).Last();
+                                double tstart = cols.ElementAt(0).ElementAt(0);
+                                double tend = cols.ElementAt(0).Last();
 
-                            // Create waveforms and curves
-                            for (int iwave = 0; iwave < Nwavefoms; iwave++)
-                            {
-                                waves.Add(new Waveform("Wave-" + waves.Count, cols.ElementAt(1), tstart, tend));
-                                AddCurveFromWFM(waves.Last());
+                                // Create waveforms and curves
+                                for (int iwave = 0; iwave < Nwavefoms; iwave++)
+                                {
+                                    waves.Add(new Waveform("Wave-" + waves.Count, cols.ElementAt(1), tstart, tend));
+                                    AddCurveFromWFM(waves.Last());
+                                }
+                                // cols can be disposed
+                                cols.Clear();
+                                Console.WriteLine("{0} waveforms created: {1} samples.", Nwavefoms, waves.Last().Npoints);
+                                // Make the ZedGraph visible and WFM groupbox active
+                                if (!zedGraphControl1.Visible)
+                                    zedGraphControl1.Visible = true;
+                                if (!WaveformPlots_groupBox.Enabled)
+                                    WaveformPlots_groupBox.Enabled = true;
                             }
-                            // cols can be disposed
-                            cols.Clear();
-                            Console.WriteLine("{0} waveforms created: {1} samples.", Nwavefoms, waves.Last().Npoints);
-                            // Make the ZedGraph visible and WFM groupbox active
-                            if (!zedGraphControl1.Visible)
-                                zedGraphControl1.Visible = true;
-                            if (!WaveformPlots_groupBox.Enabled)
-                                WaveformPlots_groupBox.Enabled = true;
                         }
+                        myStream.Close();
                     }
                 }
                 catch (Exception ex)
@@ -824,6 +831,11 @@ namespace SignalScope
         private void UseFitPoly_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             // cont here ..
+        }
+
+        private void SavePNG_button_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

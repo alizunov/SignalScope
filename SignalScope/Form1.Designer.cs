@@ -52,6 +52,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
+            this.SavePNG_button = new System.Windows.Forms.Button();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.Meas_control_groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).BeginInit();
@@ -66,7 +67,7 @@
             this.OpenSignal_button.Name = "OpenSignal_button";
             this.OpenSignal_button.Size = new System.Drawing.Size(75, 23);
             this.OpenSignal_button.TabIndex = 0;
-            this.OpenSignal_button.Text = "Read file";
+            this.OpenSignal_button.Text = "Read files";
             this.OpenSignal_button.UseVisualStyleBackColor = true;
             this.OpenSignal_button.Click += new System.EventHandler(this.OpenSignal_button_Click);
             // 
@@ -96,6 +97,7 @@
             // 
             // WaveformPlots_groupBox
             // 
+            this.WaveformPlots_groupBox.Controls.Add(this.SavePNG_button);
             this.WaveformPlots_groupBox.Controls.Add(this.ClearWaves_button);
             this.WaveformPlots_groupBox.Controls.Add(this.DeleteWave_button);
             this.WaveformPlots_groupBox.Controls.Add(this.Meas_control_groupBox);
@@ -318,6 +320,16 @@
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
             // 
+            // SavePNG_button
+            // 
+            this.SavePNG_button.Location = new System.Drawing.Point(904, 19);
+            this.SavePNG_button.Name = "SavePNG_button";
+            this.SavePNG_button.Size = new System.Drawing.Size(93, 23);
+            this.SavePNG_button.TabIndex = 5;
+            this.SavePNG_button.Text = "Save as PNG";
+            this.SavePNG_button.UseVisualStyleBackColor = true;
+            this.SavePNG_button.Click += new System.EventHandler(this.SavePNG_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -366,6 +378,7 @@
         private System.Windows.Forms.Button ClearMeas_button;
         private System.Windows.Forms.Button ClearWaves_button;
         private System.Windows.Forms.CheckBox UseFitPoly_checkBox;
+        private System.Windows.Forms.Button SavePNG_button;
     }
 }
 
