@@ -830,12 +830,12 @@ namespace SignalScope
 
         private void UseFitPoly_checkBox_CheckedChanged(object sender, EventArgs e)
         {
-            // cont here ..
+
         }
 
         private void SavePNG_button_Click(object sender, EventArgs e)
         {
-
+            zedGraphControl1.SaveAs();
         }
     }
 }
