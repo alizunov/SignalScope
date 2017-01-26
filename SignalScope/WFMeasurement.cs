@@ -313,7 +313,7 @@ namespace SignalScope
                 {
                     val += wave.u(ip);
                 }
-                PulseMean = val / ( wave.np(t1_LOW_gate) - wave.np(t0_LOW_gate) );
+                PulseMean = val / ( wave.np(t1_HIGH_gate) - wave.np(t0_HIGH_gate) );
                 
                 // PulseNoiseRMS
                 val = 0;

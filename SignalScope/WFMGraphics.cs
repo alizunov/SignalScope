@@ -136,9 +136,9 @@ namespace SignalScope
 
             // Create arrows
             float ArrowHeadSize = 10;
-            ArrowLowGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_lg, ytext_lg, bx_lg + 0.05 * xscale, by_lg - bheight_lg / 2);
+            ArrowLowGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_lg, ytext_lg, bx_lg + 0.05 * xscale, WFMeas.ZeroOffset);
             ArrowLowGate.Tag = WFMeas.Name + " Low Gate arrow";
-            ArrowHighGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_hg, ytext_hg, bx_hg + 0.05 * xscale, by_hg - bheight_hg / 2);
+            ArrowHighGate = new ArrowObj(crv.Color, ArrowHeadSize, xtext_hg, ytext_hg, bx_hg + 0.05 * xscale, WFMeas.PulseMean);
             ArrowHighGate.Tag = WFMeas.Name + " High Gate arrow";
             // Add to the displayed object list
             gp.GraphObjList.Add(ArrowLowGate);
