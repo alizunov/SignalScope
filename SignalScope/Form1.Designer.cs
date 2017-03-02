@@ -33,6 +33,7 @@
             this.FileRead_progressBar = new System.Windows.Forms.ProgressBar();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.WaveformPlots_groupBox = new System.Windows.Forms.GroupBox();
+            this.SavePNG_button = new System.Windows.Forms.Button();
             this.ClearWaves_button = new System.Windows.Forms.Button();
             this.DeleteWave_button = new System.Windows.Forms.Button();
             this.Meas_control_groupBox = new System.Windows.Forms.GroupBox();
@@ -52,7 +53,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
-            this.SavePNG_button = new System.Windows.Forms.Button();
+            this.ActiveCurve_SetColor_button = new System.Windows.Forms.Button();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.Meas_control_groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).BeginInit();
@@ -97,6 +98,7 @@
             // 
             // WaveformPlots_groupBox
             // 
+            this.WaveformPlots_groupBox.Controls.Add(this.ActiveCurve_SetColor_button);
             this.WaveformPlots_groupBox.Controls.Add(this.SavePNG_button);
             this.WaveformPlots_groupBox.Controls.Add(this.ClearWaves_button);
             this.WaveformPlots_groupBox.Controls.Add(this.DeleteWave_button);
@@ -111,6 +113,16 @@
             this.WaveformPlots_groupBox.TabStop = false;
             this.WaveformPlots_groupBox.Text = "Waveforms";
             this.WaveformPlots_groupBox.Enter += new System.EventHandler(this.WaveformPlots_groupBox_Enter);
+            // 
+            // SavePNG_button
+            // 
+            this.SavePNG_button.Location = new System.Drawing.Point(904, 19);
+            this.SavePNG_button.Name = "SavePNG_button";
+            this.SavePNG_button.Size = new System.Drawing.Size(93, 23);
+            this.SavePNG_button.TabIndex = 5;
+            this.SavePNG_button.Text = "Save as PNG";
+            this.SavePNG_button.UseVisualStyleBackColor = true;
+            this.SavePNG_button.Click += new System.EventHandler(this.SavePNG_button_Click);
             // 
             // ClearWaves_button
             // 
@@ -320,15 +332,15 @@
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
             // 
-            // SavePNG_button
+            // ActiveCurve_SetColor_button
             // 
-            this.SavePNG_button.Location = new System.Drawing.Point(904, 19);
-            this.SavePNG_button.Name = "SavePNG_button";
-            this.SavePNG_button.Size = new System.Drawing.Size(93, 23);
-            this.SavePNG_button.TabIndex = 5;
-            this.SavePNG_button.Text = "Save as PNG";
-            this.SavePNG_button.UseVisualStyleBackColor = true;
-            this.SavePNG_button.Click += new System.EventHandler(this.SavePNG_button_Click);
+            this.ActiveCurve_SetColor_button.Location = new System.Drawing.Point(87, 47);
+            this.ActiveCurve_SetColor_button.Name = "ActiveCurve_SetColor_button";
+            this.ActiveCurve_SetColor_button.Size = new System.Drawing.Size(92, 23);
+            this.ActiveCurve_SetColor_button.TabIndex = 6;
+            this.ActiveCurve_SetColor_button.Text = "Set color";
+            this.ActiveCurve_SetColor_button.UseVisualStyleBackColor = true;
+            this.ActiveCurve_SetColor_button.Click += new System.EventHandler(this.ActiveCurve_SetColor_button_Click);
             // 
             // Form1
             // 
@@ -379,6 +391,7 @@
         private System.Windows.Forms.Button ClearWaves_button;
         private System.Windows.Forms.CheckBox UseFitPoly_checkBox;
         private System.Windows.Forms.Button SavePNG_button;
+        private System.Windows.Forms.Button ActiveCurve_SetColor_button;
     }
 }
 

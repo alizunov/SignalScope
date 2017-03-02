@@ -73,7 +73,7 @@ namespace SignalScope
             string mtext_lg = "";
             string mtext_hg = "";
             string pattern = "Offset"; // Will be used to split items between 'Low Gate" and 'High Gate' groups
-            int digits = 3;
+            int digits = 4;
             for (int it=0; it < MeasTags.Length; it++)
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(MeasTags[it], pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) // Put text to 'Low Gate'

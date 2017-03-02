@@ -157,7 +157,7 @@ namespace SignalScope
                             string[] words = Regex.Split(str1, pattern);
                             int Nwavefoms = 0;   // Number of waveforms
 
-                            if (words[0] == "LECROYMAUI")   // LeCroy .TRC text file
+                            if (words[0].Substring(0, 6) == "LECROY")   // LeCroy .TRC or .csv Excel/ASCII file
                             {
                                 stReader.ReadLine();
                                 stReader.ReadLine();
@@ -836,6 +836,28 @@ namespace SignalScope
         private void SavePNG_button_Click(object sender, EventArgs e)
         {
             zedGraphControl1.SaveAs();
+        }
+
+        private void ActiveCurve_SetColor_button_Click(object sender, EventArgs e)
+        {
+            ColorDialog AColorDialog = new ColorDialog();
+            AColorDialog.AllowFullOpen = true;
+            // Allows the user to get help. (The default is false.)
+            AColorDialog.ShowHelp = true;
+            // Sets the initial color select to the current text color.
+            AColorDialog.Color = Color.Red;
+
+            // Update the text box color if the user clicks OK 
+            if (AColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                string wave_name = ActiveCurve_comboBox.SelectedItem.ToString();
+                CurveItem crv = FindCurveByName(wave_name, gp.CurveList);
+                crv.Color = AColorDialog.Color;
+                // Update graph pane
+                zedGraphControl1.Invalidate();
+           }
+
+
         }
     }
 }
