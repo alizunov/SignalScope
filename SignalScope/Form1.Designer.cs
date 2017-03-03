@@ -33,6 +33,7 @@
             this.FileRead_progressBar = new System.Windows.Forms.ProgressBar();
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.WaveformPlots_groupBox = new System.Windows.Forms.GroupBox();
+            this.ActiveCurve_SetColor_button = new System.Windows.Forms.Button();
             this.SavePNG_button = new System.Windows.Forms.Button();
             this.ClearWaves_button = new System.Windows.Forms.Button();
             this.DeleteWave_button = new System.Windows.Forms.Button();
@@ -53,13 +54,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.ActiveCurve_comboBox = new System.Windows.Forms.ComboBox();
             this.TimeUnits_comboBox = new System.Windows.Forms.ComboBox();
-            this.ActiveCurve_SetColor_button = new System.Windows.Forms.Button();
+            this.SmoothPx_numericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.Smooth_label = new System.Windows.Forms.Label();
             this.WaveformPlots_groupBox.SuspendLayout();
             this.Meas_control_groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SmoothPx_numericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // OpenSignal_button
@@ -98,6 +101,8 @@
             // 
             // WaveformPlots_groupBox
             // 
+            this.WaveformPlots_groupBox.Controls.Add(this.Smooth_label);
+            this.WaveformPlots_groupBox.Controls.Add(this.SmoothPx_numericUpDown);
             this.WaveformPlots_groupBox.Controls.Add(this.ActiveCurve_SetColor_button);
             this.WaveformPlots_groupBox.Controls.Add(this.SavePNG_button);
             this.WaveformPlots_groupBox.Controls.Add(this.ClearWaves_button);
@@ -113,6 +118,16 @@
             this.WaveformPlots_groupBox.TabStop = false;
             this.WaveformPlots_groupBox.Text = "Waveforms";
             this.WaveformPlots_groupBox.Enter += new System.EventHandler(this.WaveformPlots_groupBox_Enter);
+            // 
+            // ActiveCurve_SetColor_button
+            // 
+            this.ActiveCurve_SetColor_button.Location = new System.Drawing.Point(87, 47);
+            this.ActiveCurve_SetColor_button.Name = "ActiveCurve_SetColor_button";
+            this.ActiveCurve_SetColor_button.Size = new System.Drawing.Size(92, 23);
+            this.ActiveCurve_SetColor_button.TabIndex = 6;
+            this.ActiveCurve_SetColor_button.Text = "Set color";
+            this.ActiveCurve_SetColor_button.UseVisualStyleBackColor = true;
+            this.ActiveCurve_SetColor_button.Click += new System.EventHandler(this.ActiveCurve_SetColor_button_Click);
             // 
             // SavePNG_button
             // 
@@ -332,15 +347,23 @@
             this.TimeUnits_comboBox.Text = "Time units";
             this.TimeUnits_comboBox.SelectedIndexChanged += new System.EventHandler(this.TimeUnits_comboBox_SelectedIndexChanged);
             // 
-            // ActiveCurve_SetColor_button
+            // SmoothPx_numericUpDown
             // 
-            this.ActiveCurve_SetColor_button.Location = new System.Drawing.Point(87, 47);
-            this.ActiveCurve_SetColor_button.Name = "ActiveCurve_SetColor_button";
-            this.ActiveCurve_SetColor_button.Size = new System.Drawing.Size(92, 23);
-            this.ActiveCurve_SetColor_button.TabIndex = 6;
-            this.ActiveCurve_SetColor_button.Text = "Set color";
-            this.ActiveCurve_SetColor_button.UseVisualStyleBackColor = true;
-            this.ActiveCurve_SetColor_button.Click += new System.EventHandler(this.ActiveCurve_SetColor_button_Click);
+            this.SmoothPx_numericUpDown.Location = new System.Drawing.Point(120, 76);
+            this.SmoothPx_numericUpDown.Name = "SmoothPx_numericUpDown";
+            this.SmoothPx_numericUpDown.Size = new System.Drawing.Size(59, 20);
+            this.SmoothPx_numericUpDown.TabIndex = 7;
+            this.SmoothPx_numericUpDown.ValueChanged += new System.EventHandler(this.SmoothPx_numericUpDown_ValueChanged);
+            // 
+            // Smooth_label
+            // 
+            this.Smooth_label.AutoSize = true;
+            this.Smooth_label.Location = new System.Drawing.Point(71, 78);
+            this.Smooth_label.Name = "Smooth_label";
+            this.Smooth_label.Size = new System.Drawing.Size(43, 13);
+            this.Smooth_label.TabIndex = 8;
+            this.Smooth_label.Text = "Smooth";
+            this.Smooth_label.Click += new System.EventHandler(this.Smooth_label_Click);
             // 
             // Form1
             // 
@@ -355,12 +378,14 @@
             this.Text = "SignalScope";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.WaveformPlots_groupBox.ResumeLayout(false);
+            this.WaveformPlots_groupBox.PerformLayout();
             this.Meas_control_groupBox.ResumeLayout(false);
             this.Meas_control_groupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t1_numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_HighGate_t0_numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t1_numericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Meas_LowGate_t0_numericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SmoothPx_numericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -392,6 +417,8 @@
         private System.Windows.Forms.CheckBox UseFitPoly_checkBox;
         private System.Windows.Forms.Button SavePNG_button;
         private System.Windows.Forms.Button ActiveCurve_SetColor_button;
+        private System.Windows.Forms.Label Smooth_label;
+        private System.Windows.Forms.NumericUpDown SmoothPx_numericUpDown;
     }
 }
 

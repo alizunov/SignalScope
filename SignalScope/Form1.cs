@@ -859,5 +859,26 @@ namespace SignalScope
 
 
         }
+
+        private void Smooth_label_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SmoothPx_numericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            int NpixelAverage = Convert.ToInt32(SmoothPx_numericUpDown.Value);
+            if (NpixelAverage > 0)
+            {
+                try
+                {
+                    // smooth
+                }
+                catch (Exception ex)
+                {
+                    // 
+                }
+            }
+        }
     }
 }
