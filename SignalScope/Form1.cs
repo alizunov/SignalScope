@@ -872,11 +872,33 @@ namespace SignalScope
             {
                 try
                 {
-                    // smooth
+                    // Smooth active curve over number of points from the SmoothPx_numericUpDown. Original waveform has not been changed.
+                    string wave_name = ActiveCurve_comboBox.SelectedItem.ToString();
+                    CurveItem crv = FindCurveByName(wave_name, gp.CurveList);
+                    Waveform wv = FindWaveByName(wave_name, waves);
+                    // Number of points in the active curve
+                    int Np = crv.Points.Count;
+                    // Make a new point pair list
+                    PointPairList ppl = new PointPairList();
+                    for (int ip = 0; ip < Np; ip++)
+                    {
+                        int npl = Convert.ToInt32((ip < Math.Floor((double)NpixelAverage / 2)) ? 0 : ip - Math.Floor((double)NpixelAverage / 2));
+                        int npr = Convert.ToInt32((ip >= Np - Math.Floor((double)NpixelAverage / 2)) ? Np : ip + Math.Floor((double)NpixelAverage / 2));
+                        int NpixelAverageActual = npr - npl;
+                        double yav = 0;
+                        for (int ipp = npl; ipp < npr; ipp++)
+                            yav += wv.u(ipp);
+                        yav /= npr - npl;
+                        ppl.Add(crv.Points[ip].X, yav);
+                    }
+                    crv.Points = ppl;
+                    // Update graph pane
+                    zedGraphControl1.Invalidate();
+
                 }
                 catch (Exception ex)
                 {
-                    // 
+                    Console.WriteLine("Smooth curve error. Original message: " + ex.Message);
                 }
             }
         }
